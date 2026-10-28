@@ -516,6 +516,38 @@
       outline: none;
     }
 
+    .locked-guest-field-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .form-input-locked {
+      background: rgba(59, 103, 144, 0.08) !important;
+      border: 1px solid rgba(59, 103, 144, 0.25) !important;
+      color: var(--text-dark) !important;
+      font-weight: 600 !important;
+      font-size: 0.95rem !important;
+      cursor: not-allowed !important;
+      user-select: none !important;
+      padding-right: 90px !important;
+    }
+
+    .locked-tag {
+      position: absolute;
+      right: 10px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--blue-primary);
+      background: rgba(59, 103, 144, 0.12);
+      border: 1px solid rgba(59, 103, 144, 0.25);
+      padding: 3px 8px;
+      border-radius: 50px;
+      pointer-events: none;
+      letter-spacing: 0.5px;
+    }
+
     .btn-submit-photo {
       width: 100%;
       background: linear-gradient(135deg, var(--blue-primary) 0%, var(--pink-primary) 100%);
@@ -566,15 +598,20 @@
 
     <!-- Identitas Nama Tamu & Pengunci Perangkat -->
     <div class="guest-identity-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <label class="form-label" style="margin-bottom: 0;">✍️ Nama Anda (Tamu Undangan)</label>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label class="form-label" style="margin-bottom: 0; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+          <span>👤 Nama Tamu Undangan</span>
+        </label>
         <span id="device-quota-badge" style="font-size: 0.72rem; font-weight: 700; color: var(--pink-primary); background: rgba(216, 150, 168, 0.15); padding: 2px 10px; border-radius: 50px;">
           Kuota: 0 / 7 Foto
         </span>
       </div>
-      <input type="text" id="global-guest-name" class="form-input" placeholder="Ketik nama Anda di sini (cth: Rian)..." value="Tamu Undangan">
-      <span id="identity-lock-info" style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 5px; line-height: 1.35;">
-        🔒 Nama akan terkunci setelah foto pertama diunggah. <button type="button" onclick="localStorage.removeItem('zaky_dina_locked_guest_name'); location.reload();" style="background: none; border: none; font-size: 0.7rem; color: var(--blue-primary); cursor: pointer; text-decoration: underline; padding: 0;">(Ganti Nama / Reset)</button>
+      <div class="locked-guest-field-wrap">
+        <input type="text" id="global-guest-name" class="form-input form-input-locked" value="Tamu Undangan" readonly title="Nama tamu terkunci sesuai undangan resmi Zaky & Dina">
+        <span class="locked-tag">🔒 Terkunci</span>
+      </div>
+      <span id="identity-lock-info" style="font-size: 0.72rem; color: var(--blue-primary); display: block; margin-top: 6px; line-height: 1.4; font-weight: 500;">
+        🔒 Identitas terkunci otomatis sesuai link undangan resmi & tidak dapat diubah.
       </span>
     </div>
 
@@ -628,6 +665,34 @@
     </div>
   </div>
 
+  <!-- Modal Selamat Datang Tamu Scan QR (Input Nama Sebelum Mulai) -->
+  <div class="modal-save-photo" id="modal-qr-welcome">
+    <div class="modal-save-card" style="text-align: center; border: 1.5px solid var(--border-pink-glow);">
+      <div style="font-size: 2.4rem; margin-bottom: 6px;">📸✨</div>
+      <span class="header-badge" style="display: inline-block; margin-bottom: 10px;">Kamera Live Tamu</span>
+      <h3 style="font-family: var(--font-serif); font-size: 1.6rem; color: var(--blue-primary); margin-bottom: 6px; line-height: 1.2;">
+        Selamat Datang di Pernikahan Zaky & Dina!
+      </h3>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+        Bantu kami mengabadikan momen bahagia ini. Silakan masukkan nama Anda untuk memulai live kamera:
+      </p>
+
+      <form id="qr-welcome-form" onsubmit="handleQrWelcomeSubmit(event)">
+        <div class="form-group" style="text-align: left; margin-bottom: 16px;">
+          <label class="form-label" for="qr-guest-input" style="font-size: 0.76rem; font-weight: 700; color: var(--blue-primary);">Nama Anda (Tamu Undangan)</label>
+          <input type="text" id="qr-guest-input" class="form-input" placeholder="Masukkan nama Anda (cth: Rian / Keluarga Budi)..." required autofocus style="background: #F8FAFD; border: 1.5px solid var(--blue-soft); font-weight: 600;">
+          <span style="font-size: 0.68rem; color: var(--text-muted); display: block; margin-top: 4px; line-height: 1.35;">
+            🔒 Nama ini akan langsung terkunci permanen di album foto pernikahan Zaky & Dina.
+          </span>
+        </div>
+
+        <button type="submit" class="btn-submit-photo" style="width: 100%;">
+          <span>Mulai Kamera Live 📸</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal Simpan Foto & Preview Caption -->
   <div class="modal-save-photo" id="modal-save">
     <div class="modal-save-card">
@@ -639,8 +704,8 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Nama Anda</label>
-        <input type="text" id="guest-name-input" class="form-input" placeholder="Masukkan nama Anda..." required>
+        <label class="form-label">Nama Anda (Sesuai Undangan)</label>
+        <input type="text" id="guest-name-input" class="form-input form-input-locked" readonly required>
       </div>
 
       <div class="form-group">

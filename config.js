@@ -29,8 +29,8 @@ const WEDDING_CONFIG = {
   // Opsional: Path video animasi buatan sendiri (misal: "assets/video/underwater-intro.mp4")
   introVideoPath: null,
 
-  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 24 April 2027 07:00:00)
-  weddingDate: "2027-04-24T07:00:00",
+  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 20 Maret 2027 07:00:00)
+  weddingDate: "2027-03-20T07:00:00",
 
   // Google Drive & Google Sheets Integration (Aktif: Shared Live Album Feed, RSVP, & Generator Link Zaky Dina)
   googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbyz_FsqMFCvSzXjB28CqnsHP7iHTqcXw9Bi9O5i_AXOHntaQ1WsNnAWkT-exjTrtxg1/exec",
@@ -38,7 +38,7 @@ const WEDDING_CONFIG = {
   // Detail Acara Akad Nikah
   akad: {
     title: "Akad Nikah",
-    date: "Sabtu, 24 April 2027",
+    date: "Sabtu, 20 Maret 2027",
     time: "Pukul 07.00 WIB",
     venue: "Kediaman Mempelai",
     address: "Loceret, Nganjuk",
@@ -48,7 +48,7 @@ const WEDDING_CONFIG = {
   // Detail Acara Ngunduh Mantu
   resepsi: {
     title: "Ngunduh Mantu",
-    date: "Minggu, 25 April 2027",
+    date: "Minggu, 27 Maret 2027",
     time: "Pukul 13.00 - 15.00 WIB",
     venue: "Pendopo Marsudi Utomo",
     address: "Pedan, Klaten",

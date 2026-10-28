@@ -31,12 +31,29 @@ function initWeddingData() {
   }
 
   const urlParams = new URLSearchParams(window.location.search);
-  const rawName = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest") || "Tamu Undangan";
+  let rawName = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+
+  // Fallback ke localStorage jika parameter URL kosong (misal saat klik kembali ke undangan)
+  if (!rawName) {
+    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
+    if (savedName && savedName !== "Tamu Undangan") {
+      rawName = savedName;
+      // Perbarui URL browser agar tetap ada parameter ?to=... tanpa reload
+      try {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set("to", savedName);
+        window.history.replaceState(null, "", newUrl.toString());
+      } catch (e) {}
+    }
+  }
+
   let decodedName = "Tamu Undangan";
-  try {
-    decodedName = decodeURIComponent(rawName.replace(/\+/g, " "));
-  } catch (e) {
-    decodedName = rawName.replace(/\+/g, " ");
+  if (rawName) {
+    try {
+      decodedName = decodeURIComponent(rawName.replace(/\+/g, " "));
+    } catch (e) {
+      decodedName = rawName.replace(/\+/g, " ");
+    }
   }
 
   document.querySelectorAll(".recipient-name").forEach(el => {
@@ -46,7 +63,25 @@ function initWeddingData() {
   if (decodedName && decodedName !== "Tamu Undangan") {
     try {
       localStorage.setItem("zaky_dina_current_guest_name", decodedName);
+      localStorage.setItem("zaky_dina_locked_guest_name", decodedName);
     } catch (e) {}
+
+    // Kunci nama tamu pada formulir RSVP / Ucapan agar tidak dapat diubah oleh siapapun
+    const rsvpGuestInput = document.getElementById("guest-name");
+    if (rsvpGuestInput) {
+      rsvpGuestInput.value = decodedName;
+      rsvpGuestInput.readOnly = true;
+      rsvpGuestInput.classList.add("form-input-locked");
+      rsvpGuestInput.title = "Nama tamu terkunci sesuai undangan resmi Zaky & Dina";
+      let lockNote = document.getElementById("rsvp-guest-name-lock-note");
+      if (!lockNote) {
+        lockNote = document.createElement("span");
+        lockNote.id = "rsvp-guest-name-lock-note";
+        lockNote.style.cssText = "font-size: 0.72rem; color: var(--blue-primary); display: block; margin-top: 5px; font-weight: 500;";
+        lockNote.innerHTML = "🔒 Nama terverifikasi otomatis sesuai undangan & tidak dapat diubah.";
+        rsvpGuestInput.parentNode.appendChild(lockNote);
+      }
+    }
 
     document.querySelectorAll("a[href^='album.html']").forEach(a => {
       a.href = "album.html?to=" + encodeURIComponent(decodedName);

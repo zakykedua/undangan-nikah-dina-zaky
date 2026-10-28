@@ -85,55 +85,168 @@ function initGuestAlbumApp() {
   initFilterPills();
   initFileUploadHandler();
   initDownloadChoiceModal();
+  checkQrWelcomeModal();
 }
 
 function initGuestNameAndLock() {
   const urlParams = new URLSearchParams(window.location.search);
-  const guestNameParam = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+  let guestNameParam = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+
+  // Fallback ke localStorage jika parameter URL kosong (misal saat dibuka kembali dari index.html)
+  if (!guestNameParam) {
+    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
+    if (savedName && savedName !== "Tamu Undangan") {
+      guestNameParam = savedName;
+      try {
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set("to", savedName);
+        window.history.replaceState(null, "", newUrl.toString());
+      } catch (e) {}
+    }
+  }
+
+  let parsedName = "Tamu Undangan";
+  if (guestNameParam) {
+    try {
+      parsedName = decodeURIComponent(guestNameParam.replace(/\+/g, " "));
+    } catch (e) {
+      parsedName = guestNameParam.replace(/\+/g, " ");
+    }
+  }
+
   const nameInput = document.getElementById("global-guest-name");
   const lockInfo = document.getElementById("identity-lock-info");
+  const lockedTag = document.querySelector(".locked-tag");
 
-  let lockedName = localStorage.getItem("zaky_dina_locked_guest_name");
-  if (lockedName === "Tamu Undangan") {
-    localStorage.removeItem("zaky_dina_locked_guest_name");
-    lockedName = null;
+  // Update tombol "← Kembali ke Undangan" agar selalu membawa parameter nama tamu ke index.html
+  const backBtn = document.querySelector(".btn-back");
+  if (backBtn) {
+    if (parsedName && parsedName !== "Tamu Undangan") {
+      backBtn.href = "index.html?to=" + encodeURIComponent(parsedName);
+    } else {
+      backBtn.href = "index.html";
+    }
   }
 
-  if (nameInput) {
-    if (lockedName) {
-      // NAMA SUDAH TERKUNCI KARENA SUDAH KIRIM FOTO
-      nameInput.value = lockedName;
-      nameInput.disabled = true;
-      nameInput.style.background = "#E2E8F0";
-      nameInput.style.color = "#4A5568";
-      if (lockInfo) {
-        lockInfo.innerHTML = '🔒 <strong>Identitas Terkunci:</strong> Foto otomatis tersimpan di album atas nama ini. <button type="button" onclick="localStorage.removeItem(\'zaky_dina_locked_guest_name\'); location.reload();" style="background: none; border: none; font-size: 0.7rem; color: var(--blue-primary); cursor: pointer; text-decoration: underline; padding: 0; margin-left: 4px;">(Ganti Nama)</button>';
-        lockInfo.style.color = "var(--blue-primary)";
-      }
-    } else if (guestNameParam) {
-      let parsedName = "";
-      try {
-        parsedName = decodeURIComponent(guestNameParam.replace(/\+/g, " "));
-      } catch (e) {
-        parsedName = guestNameParam.replace(/\+/g, " ");
-      }
+  if (parsedName && parsedName !== "Tamu Undangan") {
+    // IDENTITAS RESMI DARI LINK UNDANGAN ATAU STORAGE: KUNCI PENUH
+    try {
+      localStorage.setItem("zaky_dina_current_guest_name", parsedName);
+      localStorage.setItem("zaky_dina_locked_guest_name", parsedName);
+    } catch (e) {}
+
+    if (nameInput) {
       nameInput.value = parsedName;
-      try {
-        localStorage.setItem("zaky_dina_current_guest_name", parsedName);
-      } catch (e) {}
-    } else {
-      const savedName = localStorage.getItem("zaky_dina_current_guest_name");
-      if (savedName && savedName !== "Tamu Undangan") {
-        nameInput.value = savedName;
-      }
+      nameInput.readOnly = true;
+      nameInput.classList.add("form-input-locked");
+      nameInput.title = "Nama tamu terkunci sesuai undangan resmi Zaky & Dina";
     }
 
-    nameInput.addEventListener("input", () => {
-      if (!localStorage.getItem("zaky_dina_locked_guest_name")) {
-        localStorage.setItem("zaky_dina_current_guest_name", nameInput.value.trim());
-      }
-    });
+    if (lockedTag) {
+      lockedTag.style.display = "inline-block";
+    }
+
+    if (lockInfo) {
+      lockInfo.innerHTML = '🔒 <strong>Identitas Terverifikasi:</strong> Nama dikunci otomatis sesuai link undangan resmi dan tidak dapat diubah.';
+      lockInfo.style.color = "var(--blue-primary)";
+    }
+  } else {
+    // JIKA TAMU SCAN QR LANGSUNG TANPA LINK (MISAL DI MEJA RESEPSI): BISA ISI NAMA 1x LALU TERKUNCI
+    if (nameInput) {
+      nameInput.value = "";
+      nameInput.placeholder = "Ketik nama Anda di sini (cth: Rian)...";
+      nameInput.readOnly = false;
+      nameInput.classList.remove("form-input-locked");
+      nameInput.title = "Ketik nama Anda untuk menyimpan foto";
+
+      nameInput.addEventListener("change", () => {
+        const val = nameInput.value.trim();
+        if (val) {
+          try {
+            localStorage.setItem("zaky_dina_current_guest_name", val);
+            localStorage.setItem("zaky_dina_locked_guest_name", val);
+          } catch (e) {}
+          initGuestNameAndLock();
+        }
+      });
+    }
+
+    if (lockedTag) {
+      lockedTag.style.display = "none";
+    }
+
+    if (lockInfo) {
+      lockInfo.innerHTML = '💡 Ketik nama Anda. Nama akan langsung terkunci permanen setelah Anda mengirim foto pertama.';
+      lockInfo.style.color = "var(--text-muted)";
+    }
   }
+}
+
+/* ===================================================
+   MODAL KHUSUS SCAN QR CODE (ISI NAMA SEBELUM MULAI)
+   =================================================== */
+function checkQrWelcomeModal() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const isFromQr = urlParams.get("from") === "qr" || urlParams.get("qr") === "1" || urlParams.get("scan") === "true";
+  const guestNameParam = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+
+  // Jika URL sudah membawa nama tamu khusus dari undangan (?to=Budi), tidak perlu modal
+  if (guestNameParam && guestNameParam !== "Tamu Undangan") {
+    return;
+  }
+
+  // Cek apakah di perangkat ini sudah tersimpan nama sebelumnya
+  const savedName = localStorage.getItem("zaky_dina_locked_guest_name") || localStorage.getItem("zaky_dina_current_guest_name");
+
+  // Jika scan dari QR (atau belum ada nama sama sekali yang tersimpan)
+  if (isFromQr || !savedName || savedName === "Tamu Undangan") {
+    if (!savedName || savedName === "Tamu Undangan") {
+      const modal = document.getElementById("modal-qr-welcome");
+      const input = document.getElementById("qr-guest-input");
+      if (modal) {
+        modal.classList.add("active");
+        setTimeout(() => {
+          if (input) input.focus();
+        }, 350);
+      }
+    } else if (isFromQr) {
+      showToastNotification(`Selamat datang kembali, ${savedName}! 📸`);
+    }
+  }
+}
+
+function handleQrWelcomeSubmit(e) {
+  if (e) e.preventDefault();
+
+  const input = document.getElementById("qr-guest-input");
+  const guestName = input ? input.value.trim() : "";
+
+  if (!guestName) {
+    alert("Mohon masukkan nama Anda terlebih dahulu.");
+    return;
+  }
+
+  try {
+    localStorage.setItem("zaky_dina_current_guest_name", guestName);
+    localStorage.setItem("zaky_dina_locked_guest_name", guestName);
+  } catch (err) {}
+
+  // Tutup modal selamat datang
+  const modal = document.getElementById("modal-qr-welcome");
+  if (modal) {
+    modal.classList.remove("active");
+  }
+
+  // Refresh tampilan & kunci identitas di halaman
+  initGuestNameAndLock();
+
+  // Tampilkan notifikasi & nyalakan kamera HP otomatis
+  showToastNotification(`Selamat datang, ${guestName}! Kamera aktif ✨`);
+  setTimeout(() => {
+    if (typeof startCameraStream === "function") {
+      startCameraStream();
+    }
+  }, 300);
 }
 
 function getStoredAlbums() {
@@ -609,8 +722,8 @@ function openSaveModal(imgUrl) {
   const modalSave = document.getElementById("modal-save");
   const previewImg = document.getElementById("save-preview-img");
   const nameInput = document.getElementById("guest-name-input");
-  const globalName = document.getElementById("global-guest-name")?.value.trim();
-  const lockedName = localStorage.getItem("zaky_dina_locked_guest_name");
+  const globalInput = document.getElementById("global-guest-name");
+  const lockedName = localStorage.getItem("zaky_dina_locked_guest_name") || localStorage.getItem("zaky_dina_current_guest_name");
   const captionInput = document.getElementById("guest-caption-input");
 
   if (previewImg) {
@@ -618,9 +731,19 @@ function openSaveModal(imgUrl) {
     previewImg.style.cssText = `width: 100%; height: 100%; object-fit: cover; ${getFilterStyle(currentSelectedFilter)}`;
   }
 
+  const effectiveName = lockedName || globalInput?.value.trim() || "";
   if (nameInput) {
-    nameInput.value = lockedName || globalName || "Tamu Undangan";
-    if (lockedName) nameInput.disabled = true;
+    if (effectiveName && effectiveName !== "Tamu Undangan") {
+      nameInput.value = effectiveName;
+      nameInput.readOnly = true;
+      nameInput.classList.add("form-input-locked");
+      nameInput.title = "Nama tamu terkunci sesuai undangan resmi";
+    } else {
+      nameInput.value = "";
+      nameInput.placeholder = "Masukkan nama Anda...";
+      nameInput.readOnly = false;
+      nameInput.classList.remove("form-input-locked");
+    }
   }
 
   if (captionInput) {
@@ -642,8 +765,11 @@ function handleSaveNewPhoto() {
     return;
   }
 
+  const lockedName = localStorage.getItem("zaky_dina_locked_guest_name") || localStorage.getItem("zaky_dina_current_guest_name");
   const nameInput = document.getElementById("guest-name-input");
-  let guestName = nameInput ? nameInput.value.trim() : "";
+  const globalInput = document.getElementById("global-guest-name");
+  let guestName = lockedName || nameInput?.value.trim() || globalInput?.value.trim() || "Tamu Undangan";
+
   const captionInput = document.getElementById("guest-caption-input");
   const captionText = captionInput ? captionInput.value.trim() : "";
 
@@ -652,16 +778,12 @@ function handleSaveNewPhoto() {
     return;
   }
 
-  if (!guestName) {
-    guestName = "Tamu Undangan";
-  }
-
-  const lockedName = localStorage.getItem("zaky_dina_locked_guest_name");
-  if (lockedName) {
-    guestName = lockedName;
-  } else {
-    localStorage.setItem("zaky_dina_locked_guest_name", guestName);
-    initGuestNameAndLock();
+  if (guestName && guestName !== "Tamu Undangan" && !lockedName) {
+    try {
+      localStorage.setItem("zaky_dina_locked_guest_name", guestName);
+      localStorage.setItem("zaky_dina_current_guest_name", guestName);
+      initGuestNameAndLock();
+    } catch (e) {}
   }
 
   let albums = getStoredAlbums();
