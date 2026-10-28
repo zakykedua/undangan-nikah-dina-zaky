@@ -20,33 +20,40 @@ var DRIVE_FOLDER_ID = "1eYoURu3wO9U0gouLlvFx6F51xy11VesF";
  */
 function getMainSheet() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  var sheet = ss.getSheets()[0];
+  var sheets = ss.getSheets();
 
-  // Hapus tab "Daftar Tamu" jika ada agar spreadsheet tidak kebanyakan tab
+  // 1. Pilih sheet utama (prioritaskan yang BUKAN 'Daftar Tamu')
+  var sheet = sheets[0];
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].getName() !== "Daftar Tamu") {
+      sheet = sheets[i];
+      break;
+    }
+  }
+
+  // 2. Hapus tab "Daftar Tamu" jika ada tab lain agar hanya tersisa 1 tab tunggal
   var extraSheet = ss.getSheetByName("Daftar Tamu");
-  if (extraSheet && ss.getSheets().length > 1) {
+  if (extraSheet && sheets.length > 1) {
     try {
       ss.deleteSheet(extraSheet);
     } catch (e) {}
   }
 
-  // Jika sheet masih baru/kosong, pasang header tabel
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow([
-      "No",
-      "Nama Tamu",
-      "Status / Kehadiran",
-      "Link Undangan",
-      "Ucapan & Doa Restu",
-      "Waktu",
-      "Kirim WhatsApp Langsung"
-    ]);
-    sheet.getRange(1, 1, 1, 7)
-      .setFontWeight("bold")
-      .setBackground("#3B6790")
-      .setFontColor("#FFFFFF");
-    sheet.setFrozenRows(1);
-  }
+  // 3. Pastikan Header baris 1 TEPAT 7 KOLOM
+  sheet.getRange(1, 1, 1, 7).setValues([[
+    "No",
+    "Nama Tamu",
+    "Status / Kehadiran",
+    "Link Undangan",
+    "Ucapan & Doa Restu",
+    "Waktu",
+    "Kirim WhatsApp Langsung"
+  ]]);
+  sheet.getRange(1, 1, 1, 7)
+    .setFontWeight("bold")
+    .setBackground("#3B6790")
+    .setFontColor("#FFFFFF");
+  sheet.setFrozenRows(1);
 
   return sheet;
 }
