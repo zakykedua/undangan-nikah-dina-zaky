@@ -4,12 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cetak QR Code Stand Meja - Zaky & Dina Wedding</title>
+  <title>Cetak QR Code - Zaky & Dina Wedding</title>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Reenie+Beanie&display=swap"
+    rel="stylesheet">
+
+  <!-- Wedding Config -->
+  <script src="config.js"></script>
 
   <style>
     :root {
@@ -283,7 +288,8 @@
         padding: 0;
       }
 
-      .toolbar, .nav-back {
+      .toolbar,
+      .nav-back {
         display: none !important;
       }
 
@@ -302,7 +308,8 @@
 
   <!-- Tombol Navigasi Kembali -->
   <div class="nav-back" style="width: 100%; max-width: 460px; margin-bottom: 12px;">
-    <a href="index.html" style="font-size: 0.78rem; color: var(--blue-primary); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+    <a href="index.html"
+      style="font-size: 0.78rem; color: var(--blue-primary); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
       ← Kembali ke Halaman Undangan
     </a>
   </div>
@@ -310,7 +317,7 @@
   <!-- PENGATURAN & PILIHAN QR (TIDAK AKAN TERCETAK) -->
   <div class="toolbar">
     <h3>⚙️ Pengaturan Barcode / QR Code</h3>
-    
+
     <div class="tab-pills">
       <button class="tab-btn active" onclick="switchQr('album')">📸 Live Photo Album</button>
       <button class="tab-btn" onclick="switchQr('undangan')">💌 Undangan Umum</button>
@@ -318,24 +325,59 @@
     </div>
 
     <div class="guest-input-wrap" id="custom-guest-wrap">
-      <label style="font-size: 0.74rem; font-weight: 700; color: var(--blue-primary); display: block; margin-bottom: 4px;">
-        Ketik Nama Tamu Khusus:
-      </label>
-      <input type="text" id="custom-guest-name" class="guest-input" placeholder="Masukkan nama tamu (misal: Rian & Partner)..." oninput="updateCustomQr()">
-      
-      <!-- Box Hasil Link Rahasia (Anti-Ubah) -->
-      <div id="hidden-link-box" style="margin-top: 10px; background: #F8FAFD; border: 1px solid rgba(59, 103, 144, 0.25); border-radius: 10px; padding: 12px; font-size: 0.74rem;">
-        <span style="font-weight: 700; color: var(--blue-primary); display: block; margin-bottom: 3px;">🔒 Link Undangan Rahasia (Anti-Ubah):</span>
-        <div id="generated-hidden-url" style="word-break: break-all; color: var(--text-dark); font-family: monospace; font-size: 0.7rem; margin-bottom: 10px; background: #FFF; padding: 6px 8px; border-radius: 6px; border: 1px dashed var(--border-pink-glow);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+        <label
+          style="font-size: 0.74rem; font-weight: 700; color: var(--blue-primary); display: block;">
+          Ketik Nama Tamu Khusus:
+        </label>
+        <span id="sync-status-badge"
+          style="font-size: 0.68rem; font-weight: 600; color: #566879; display: inline-flex; align-items: center; gap: 4px;">
+          📊 Siap mencatat
+        </span>
+      </div>
+      <input type="text" id="custom-guest-name" class="guest-input"
+        placeholder="Masukkan nama tamu (misal: Rian & Partner)..." oninput="handleGuestInput()" onkeydown="handleGuestKeydown(event)">
+
+      <!-- Box Hasil Link Undangan (Anti-Ubah) -->
+      <div id="hidden-link-box"
+        style="margin-top: 10px; background: #F8FAFD; border: 1px solid rgba(59, 103, 144, 0.25); border-radius: 10px; padding: 12px; font-size: 0.74rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <span style="font-weight: 700; color: var(--blue-primary);">🔒 Link Undangan Khusus:</span>
+          <span id="sync-detail-msg" style="font-size: 0.67rem; color: #566879;">Otomatis ke Spreadsheet</span>
+        </div>
+        <div id="generated-hidden-url"
+          style="word-break: break-all; color: var(--text-dark); font-family: monospace; font-size: 0.7rem; margin-bottom: 10px; background: #FFF; padding: 6px 8px; border-radius: 6px; border: 1px dashed var(--border-pink-glow);">
           https://zakykedua.github.io/undangan-nikah-dina-zaky/
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button type="button" class="btn-action" onclick="copyHiddenLink()" style="background: var(--blue-primary); color: #fff; font-size: 0.72rem; padding: 7px 12px; border-radius: 6px;">
-            📋 Salin Link Rahasia
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-action" onclick="copyHiddenLink()"
+            style="flex: 1; min-width: 100px; background: var(--blue-primary); color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px;">
+            📋 Salin Link
           </button>
-          <button type="button" class="btn-action" onclick="copyWaText()" style="background: #25D366; color: #fff; font-size: 0.72rem; padding: 7px 12px; border-radius: 6px;">
-            💬 Salin Chat WhatsApp
+          <button type="button" class="btn-action" onclick="copyWaText()"
+            style="flex: 1; min-width: 130px; background: #25D366; color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px;">
+            💬 Salin Pesan WA
           </button>
+          <a href="https://docs.google.com/spreadsheets/d/1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps/edit" target="_blank" class="btn-action"
+            style="background: #107C41; color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+            📊 Buka Sheet ↗
+          </a>
+        </div>
+      </div>
+
+      <!-- Riwayat Daftar Tamu yang Dibuat -->
+      <div id="saved-guests-section" style="margin-top: 14px; border-top: 1px dashed rgba(59, 103, 144, 0.25); padding-top: 10px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 0.72rem; font-weight: 700; color: var(--blue-primary);">
+            📝 Tamu yang Sudah Dibuat (<span id="saved-count">0</span>)
+          </span>
+          <button type="button" onclick="clearSavedGuests()"
+            style="background: none; border: none; font-size: 0.65rem; color: #C2546A; cursor: pointer; text-decoration: underline;">
+            Bersihkan Riwayat
+          </button>
+        </div>
+        <div id="saved-guests-list" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+          <!-- Diisi otomatis oleh JavaScript -->
         </div>
       </div>
     </div>
@@ -344,7 +386,8 @@
       <button class="btn-action btn-print" onclick="window.print()">
         🖨️ Cetak / Print Stand Meja
       </button>
-      <a id="btn-download-img" class="btn-action btn-download" href="assets/images/album_qr.png" download="QR_Live_Album_Zaky_Dina.png">
+      <a id="btn-download-img" class="btn-action btn-download" href="assets/images/album_qr.png"
+        download="QR_Live_Album_Zaky_Dina.png">
         ⬇️ Unduh Gambar QR
       </a>
     </div>
@@ -365,7 +408,8 @@
 
     <h2 class="stand-scan-msg" id="card-main-msg">📸 Cekrek & Abadikan Momen!</h2>
     <p class="stand-desc" id="card-desc">
-      Bantu kami mengabadikan momen bahagia ini. Scan barcode ini dengan kamera HP Anda untuk langsung mengambil foto instant!
+      Bantu kami mengabadikan momen bahagia ini. Scan barcode ini dengan kamera HP Anda untuk langsung mengambil foto
+      instant!
     </p>
 
     <!-- Petunjuk Langkah -->
@@ -391,6 +435,8 @@
 
   <script>
     let currentMode = "album";
+    let debounceTimer = null;
+    let lastSyncedName = "";
 
     function switchQr(mode) {
       currentMode = mode;
@@ -411,7 +457,7 @@
         qrImg.src = "assets/images/album_qr.png";
         btnDownload.href = "assets/images/album_qr.png";
         btnDownload.download = "QR_Live_Album_Zaky_Dina.png";
-        
+
         cardTag.textContent = "Kamera Live Instant";
         cardMainMsg.textContent = "📸 Cekrek & Abadikan Momen!";
         cardDesc.textContent = "Bantu kami mengabadikan momen bahagia ini. Scan barcode ini dengan kamera HP Anda untuk langsung mengambil foto instant!";
@@ -429,6 +475,7 @@
       } else if (mode === "custom") {
         customWrap.classList.add("active");
         updateCustomQr();
+        renderSavedGuests();
       }
     }
 
@@ -472,23 +519,249 @@
       cardUrl.textContent = targetUrl;
     }
 
+    function handleGuestInput() {
+      updateCustomQr();
+
+      const nameInput = document.getElementById("custom-guest-name");
+      const rawName = nameInput ? nameInput.value.trim() : "";
+
+      if (debounceTimer) clearTimeout(debounceTimer);
+
+      if (rawName && rawName.length >= 2 && rawName !== "Tamu Undangan") {
+        setSyncStatus("typing");
+        debounceTimer = setTimeout(() => {
+          syncGuestToSpreadsheet(rawName);
+        }, 1100);
+      } else {
+        setSyncStatus("idle");
+      }
+    }
+
+    function handleGuestKeydown(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const nameInput = document.getElementById("custom-guest-name");
+        const rawName = nameInput ? nameInput.value.trim() : "";
+        if (rawName && rawName.length >= 2) {
+          if (debounceTimer) clearTimeout(debounceTimer);
+          syncGuestToSpreadsheet(rawName);
+        }
+      }
+    }
+
+    function setSyncStatus(state, msg) {
+      const badge = document.getElementById("sync-status-badge");
+      const detail = document.getElementById("sync-detail-msg");
+      if (!badge) return;
+
+      if (state === "typing") {
+        badge.innerHTML = "⏳ Mengetik...";
+        badge.style.color = "#E08339";
+      } else if (state === "syncing") {
+        badge.innerHTML = "⏳ Menyimpan ke Spreadsheet...";
+        badge.style.color = "#3B6790";
+        if (detail) detail.textContent = "Sedang dikirim...";
+      } else if (state === "success") {
+        badge.innerHTML = "✅ Tersimpan di Spreadsheet";
+        badge.style.color = "#107C41";
+        if (detail) detail.textContent = msg || "Tercatat di Google Sheets";
+      } else if (state === "local_only") {
+        badge.innerHTML = "💾 Tersimpan di Perangkat";
+        badge.style.color = "#5C82A6";
+        if (detail) detail.textContent = msg || "Tersimpan di riwayat lokal";
+      } else {
+        badge.innerHTML = "📊 Siap mencatat";
+        badge.style.color = "#566879";
+        if (detail) detail.textContent = "Otomatis ke Spreadsheet";
+      }
+    }
+
+    function syncGuestToSpreadsheet(guestName) {
+      if (!guestName || guestName === "Tamu Undangan" || guestName.length < 2) return;
+
+      const token = encodeGuestName(guestName);
+      const targetUrl = token
+        ? "https://zakykedua.github.io/undangan-nikah-dina-zaky/?u=" + token
+        : "https://zakykedua.github.io/undangan-nikah-dina-zaky/";
+
+      // Simpan ke riwayat lokal terlebih dahulu
+      saveToLocalGuestList(guestName, targetUrl);
+
+      if (lastSyncedName.toLowerCase() === guestName.toLowerCase()) {
+        setSyncStatus("success", "Sudah tercatat di Spreadsheet");
+        return;
+      }
+
+      setSyncStatus("syncing");
+
+      const webhookUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
+        ? WEDDING_CONFIG.googleDriveWebhookUrl
+        : "https://script.google.com/macros/s/AKfycbyz_FsqMFCvSzXjB28CqnsHP7iHTqcXw9Bi9O5i_AXOHntaQ1WsNnAWkT-exjTrtxg1/exec";
+
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          type: "addGuest",
+          name: guestName,
+          url: targetUrl
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.status === "success") {
+          lastSyncedName = guestName;
+          setSyncStatus("success", data.message || "Tersimpan di Google Sheets");
+        } else {
+          lastSyncedName = guestName;
+          setSyncStatus("local_only", "Tersimpan di riwayat lokal");
+        }
+      })
+      .catch(err => {
+        console.warn("Sync Google Sheets:", err);
+        lastSyncedName = guestName;
+        setSyncStatus("local_only", "Tersimpan di riwayat lokal");
+      });
+    }
+
+    function getStoredGuestList() {
+      try {
+        return JSON.parse(localStorage.getItem("zaky_dina_guest_list") || "[]");
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveToLocalGuestList(name, url) {
+      let list = getStoredGuestList();
+      const existingIdx = list.findIndex(item => item.name.toLowerCase() === name.toLowerCase());
+      const nowStr = new Date().toLocaleDateString("id-ID", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+      if (existingIdx >= 0) {
+        list[existingIdx].url = url;
+        list[existingIdx].date = nowStr;
+      } else {
+        list.unshift({
+          name: name,
+          url: url,
+          date: nowStr
+        });
+      }
+
+      localStorage.setItem("zaky_dina_guest_list", JSON.stringify(list));
+      renderSavedGuests();
+    }
+
+    function renderSavedGuests() {
+      const container = document.getElementById("saved-guests-list");
+      const countEl = document.getElementById("saved-count");
+      if (!container) return;
+
+      const list = getStoredGuestList();
+      if (countEl) countEl.textContent = list.length;
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="font-size: 0.68rem; color: #8A9AA8; text-align: center; padding: 8px;">Belum ada nama tamu yang dicatat.</div>';
+        return;
+      }
+
+      container.innerHTML = list.map((g, idx) => `
+        <div style="background: #FFFFFF; border: 1px solid #E2EAF2; border-radius: 6px; padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+          <div style="overflow: hidden; flex: 1;">
+            <div style="font-weight: 700; font-size: 0.72rem; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              ${idx + 1}. ${escapeHtml(g.name)}
+            </div>
+            <div style="font-size: 0.62rem; color: #8A9AA8;">${g.date || ''}</div>
+          </div>
+          <div style="display: flex; gap: 4px; flex-shrink: 0;">
+            <button type="button" onclick="quickCopyGuestLink('${escapeAttr(g.url)}', '${escapeAttr(g.name)}')" title="Salin Link"
+              style="padding: 4px 7px; background: var(--blue-primary); color: #FFF; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+              📋
+            </button>
+            <button type="button" onclick="quickCopyGuestWa('${escapeAttr(g.url)}', '${escapeAttr(g.name)}')" title="Salin Pesan WA"
+              style="padding: 4px 7px; background: #25D366; color: #FFF; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+              💬
+            </button>
+            <button type="button" onclick="removeGuest('${escapeAttr(g.name)}')" title="Hapus"
+              style="padding: 4px 7px; background: #FDE8E8; color: #C2546A; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+              ✕
+            </button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function quickCopyGuestLink(url, name) {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("✨ Link undangan untuk " + name + " berhasil disalin!");
+      });
+    }
+
+    function quickCopyGuestWa(url, name) {
+      const text = `Assalamu’alaikum Warahmatullahi Wabarakatuh\n\nYth. *${name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Zaky & Dina*\n🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\nDetail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n🔗 ${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\nWassalamu’alaikum Warahmatullahi Wabarakatuh\nKami yang berbahagia,\n*Zaky & Dina*`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✨ Teks WhatsApp untuk " + name + " berhasil disalin!");
+      });
+    }
+
+    function removeGuest(name) {
+      let list = getStoredGuestList();
+      list = list.filter(g => g.name.toLowerCase() !== name.toLowerCase());
+      localStorage.setItem("zaky_dina_guest_list", JSON.stringify(list));
+      renderSavedGuests();
+    }
+
+    function clearSavedGuests() {
+      if (confirm("Apakah Anda yakin ingin membersihkan riwayat daftar tamu di perangkat ini? (Data di Google Spreadsheet tetap aman)")) {
+        localStorage.removeItem("zaky_dina_guest_list");
+        renderSavedGuests();
+      }
+    }
+
     function copyHiddenLink() {
+      const name = document.getElementById("custom-guest-name")?.value.trim() || "Tamu Undangan";
       const url = document.getElementById("generated-hidden-url")?.textContent.trim();
       if (!url) return;
+
+      if (name && name !== "Tamu Undangan") {
+        syncGuestToSpreadsheet(name);
+      }
+
       navigator.clipboard.writeText(url).then(() => {
-        alert("✨ Link rahasia berhasil disalin!");
+        alert("✨ Link undangan untuk " + (name !== "Tamu Undangan" ? name : "tamu") + " berhasil disalin!");
       });
     }
 
     function copyWaText() {
       const name = document.getElementById("custom-guest-name")?.value.trim() || "Bapak/Ibu/Saudara/i";
       const url = document.getElementById("generated-hidden-url")?.textContent.trim();
+
+      if (name && name !== "Bapak/Ibu/Saudara/i" && name !== "Tamu Undangan") {
+        syncGuestToSpreadsheet(name);
+      }
+
       const text = `Assalamu’alaikum Warahmatullahi Wabarakatuh\n\nYth. *${name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Zaky & Dina*\n🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\nDetail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n🔗 ${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\nWassalamu’alaikum Warahmatullahi Wabarakatuh\nKami yang berbahagia,\n*Zaky & Dina*`;
-      
+
       navigator.clipboard.writeText(text).then(() => {
         alert("✨ Teks pesan WhatsApp untuk " + name + " berhasil disalin!");
       });
     }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      })[m]);
+    }
+
+    function escapeAttr(str) {
+      if (!str) return "";
+      return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderSavedGuests();
+    });
   </script>
 </body>
 
