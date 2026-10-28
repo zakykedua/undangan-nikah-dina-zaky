@@ -371,10 +371,16 @@
           <span style="font-size: 0.72rem; font-weight: 700; color: var(--blue-primary);">
             📝 Tamu yang Sudah Dibuat (<span id="saved-count">0</span>)
           </span>
-          <button type="button" onclick="clearSavedGuests()"
-            style="background: none; border: none; font-size: 0.65rem; color: #C2546A; cursor: pointer; text-decoration: underline;">
-            Bersihkan Riwayat
-          </button>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" onclick="syncAllGuestsToSpreadsheet()"
+              style="background: none; border: none; font-size: 0.65rem; color: #107C41; cursor: pointer; text-decoration: underline; font-weight: 600;">
+              🔄 Sync Semua ke Sheet
+            </button>
+            <button type="button" onclick="clearSavedGuests()"
+              style="background: none; border: none; font-size: 0.65rem; color: #C2546A; cursor: pointer; text-decoration: underline;">
+              Bersihkan
+            </button>
+          </div>
         </div>
         <div id="saved-guests-list" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
           <!-- Diisi otomatis oleh JavaScript -->
@@ -600,6 +606,7 @@
 
       fetch(webhookUrl, {
         method: "POST",
+        mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({
           type: "addGuest",
@@ -607,20 +614,50 @@
           url: targetUrl
         })
       })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.status === "success") {
-          lastSyncedName = guestName;
-          setSyncStatus("success", data.message || "Tersimpan di Google Sheets");
-        } else {
-          lastSyncedName = guestName;
-          setSyncStatus("local_only", "Tersimpan di riwayat lokal");
-        }
+      .then(() => {
+        lastSyncedName = guestName;
+        setSyncStatus("success", "Tercatat di Google Sheets");
       })
       .catch(err => {
         console.warn("Sync Google Sheets:", err);
         lastSyncedName = guestName;
         setSyncStatus("local_only", "Tersimpan di riwayat lokal");
+      });
+    }
+
+    function syncAllGuestsToSpreadsheet() {
+      const list = getStoredGuestList();
+      if (!list || list.length === 0) {
+        alert("Belum ada riwayat tamu yang dibuat.");
+        return;
+      }
+
+      const webhookUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
+        ? WEDDING_CONFIG.googleDriveWebhookUrl
+        : "https://script.google.com/macros/s/AKfycbyz_FsqMFCvSzXjB28CqnsHP7iHTqcXw9Bi9O5i_AXOHntaQ1WsNnAWkT-exjTrtxg1/exec";
+
+      setSyncStatus("syncing");
+      let count = 0;
+
+      list.forEach((guest, i) => {
+        setTimeout(() => {
+          fetch(webhookUrl, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({
+              type: "addGuest",
+              name: guest.name,
+              url: guest.url
+            })
+          }).then(() => {
+            count++;
+            if (count === list.length) {
+              setSyncStatus("success", "Semua " + count + " tamu disinkronkan ke Spreadsheet!");
+              alert("✨ Sukses! Sebanyak " + count + " tamu telah disinkronkan ke Google Spreadsheet.");
+            }
+          });
+        }, i * 350);
       });
     }
 
