@@ -1,10 +1,11 @@
 /**
  * ===================================================
  * GOOGLE APPS SCRIPT - ZAKY & DINA WEDDING
- * Integrasi:
- * 1. Google Sheets: Buku Tamu / Daftar Tamu Undangan
- * 2. Google Sheets: Data RSVP & Ucapan Selamat
- * 3. Google Drive: Shared Live Photo Album
+ * Integrasi 1 Tab Tunggal:
+ * - Buku Tamu & Link Khusus Undangan
+ * - Tombol Klik Kirim WhatsApp Langsung di Sheet
+ * - Konfirmasi Kehadiran (RSVP) & Doa Restu
+ * - Upload Foto Live Album ke Google Drive
  * 
  * SPREADSHEET ID: 1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps
  * DRIVE FOLDER ID: 1eYoURu3wO9U0gouLlvFx6F51xy11VesF
@@ -15,48 +16,85 @@ var SPREADSHEET_ID = "1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps";
 var DRIVE_FOLDER_ID = "1eYoURu3wO9U0gouLlvFx6F51xy11VesF";
 
 /**
+ * Helper untuk mengambil Sheet Utama tunggal & menghapus tab tambahan jika ada
+ */
+function getMainSheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var sheet = ss.getSheets()[0];
+
+  // Hapus tab "Daftar Tamu" jika ada agar spreadsheet tidak kebanyakan tab
+  var extraSheet = ss.getSheetByName("Daftar Tamu");
+  if (extraSheet && ss.getSheets().length > 1) {
+    try {
+      ss.deleteSheet(extraSheet);
+    } catch (e) {}
+  }
+
+  // Jika sheet masih baru/kosong, pasang header tabel
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      "No",
+      "Nama Tamu",
+      "Status / Kehadiran",
+      "Link Undangan",
+      "Ucapan & Doa Restu",
+      "Waktu",
+      "Kirim WhatsApp Langsung"
+    ]);
+    sheet.getRange(1, 1, 1, 7)
+      .setFontWeight("bold")
+      .setBackground("#3B6790")
+      .setFontColor("#FFFFFF");
+    sheet.setFrozenRows(1);
+  }
+
+  return sheet;
+}
+
+/**
+ * Formula tautan WhatsApp instan langsung di sel spreadsheet
+ */
+function getWaFormula(guestName, guestUrl) {
+  var text = "Assalamu’alaikum Warahmatullahi Wabarakatuh\n\n" +
+    "Yth. *" + guestName + "*,\n\n" +
+    "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n" +
+    "💍 *Zaky & Dina*\n" +
+    "🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\n" +
+    "Detail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n" +
+    "🔗 " + guestUrl + "\n\n" +
+    "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\n" +
+    "Wassalamu’alaikum Warahmatullahi Wabarakatuh\n" +
+    "Kami yang berbahagia,\n" +
+    "*Zaky & Dina*";
+
+  var encoded = encodeURIComponent(text);
+  return '=HYPERLINK("https://api.whatsapp.com/send?text=' + encoded + '", "💬 Kirim WhatsApp")';
+}
+
+/**
  * Handle HTTP GET Requests
- * Mengambil ucapan (RSVP) atau daftar tamu
+ * Mengambil ucapan selamat (hanya yang memiliki pesan doa restu)
  */
 function doGet(e) {
   try {
-    var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "getWishes";
-    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-
-    // 1. Ambil Data Tamu Undangan
-    if (action === "getGuests") {
-      var guestSheet = ss.getSheetByName("Daftar Tamu");
-      var guests = [];
-      if (guestSheet && guestSheet.getLastRow() > 1) {
-        var guestData = guestSheet.getDataRange().getValues();
-        for (var g = 1; g < guestData.length; g++) {
-          if (guestData[g][1]) {
-            guests.push({
-              no: guestData[g][0],
-              name: guestData[g][1],
-              url: guestData[g][2] || "",
-              date: guestData[g][3] || "",
-              status: guestData[g][4] || "Siap Dikirim"
-            });
-          }
-        }
-      }
-      return ContentService.createTextOutput(JSON.stringify({ status: "success", guests: guests }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // 2. Default: Ambil Ucapan RSVP untuk Tampilan Website
-    var rsvpSheet = ss.getSheetByName("Data RSVP") || ss.getActiveSheet();
-    var data = rsvpSheet.getDataRange().getValues();
+    var sheet = getMainSheet();
+    var data = sheet.getDataRange().getValues();
     var wishes = [];
 
+    // Baca mulai baris ke-2 (melewati baris header)
     for (var i = 1; i < data.length; i++) {
-      if (data[i][0]) {
+      var name = data[i][1] || data[i][0];
+      var status = data[i][2] || "Dateng";
+      var message = data[i][4] || "";
+      var time = data[i][5] || "Baru saja";
+
+      // Hanya tampilkan di ucapan website jika benar-benar ada ucapan doa
+      if (message && !message.toString().startsWith("http") && status !== "Siap Dikirim") {
         wishes.push({
-          name: data[i][0],
-          status: data[i][1],
-          message: data[i][2],
-          time: data[i][3] || "Baru saja"
+          name: name,
+          status: status,
+          message: message,
+          time: time
         });
       }
     }
@@ -76,30 +114,15 @@ function doGet(e) {
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
-    var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    var sheet = getMainSheet();
 
     // ===================================================
-    // 1. PENDAFTARAN / PENCATATAN OTOMATIS NAMA TAMU
+    // 1. INPUT / PENCATATAN NAMA TAMU UNDANGAN (DARI GENERATOR)
     // ===================================================
     if (data.type === "addGuest" || data.type === "guest") {
-      var guestSheet = ss.getSheetByName("Daftar Tamu");
-      if (!guestSheet) {
-        guestSheet = ss.insertSheet("Daftar Tamu");
-      }
-
-      // Jika sheet masih baru/kosong, buat header tabel estetik
-      if (guestSheet.getLastRow() === 0) {
-        guestSheet.appendRow(["No", "Nama Tamu Undangan", "Link Khusus Undangan", "Tanggal Dibuat", "Status Pengiriman"]);
-        guestSheet.getRange(1, 1, 1, 5)
-          .setFontWeight("bold")
-          .setBackground("#3B6790")
-          .setFontColor("#FFFFFF");
-        guestSheet.setFrozenRows(1);
-      }
-
       var guestName = (data.name || "").trim();
       if (!guestName || guestName === "Tamu Undangan") {
-        return ContentService.createTextOutput(JSON.stringify({ status: "ignored", message: "Nama tamu kosong/default" }))
+        return ContentService.createTextOutput(JSON.stringify({ status: "ignored", message: "Nama tamu kosong" }))
           .setMimeType(ContentService.MimeType.JSON);
       }
 
@@ -112,34 +135,46 @@ function doPost(e) {
         hour: '2-digit',
         minute: '2-digit'
       });
+      var waFormula = getWaFormula(guestName, guestUrl);
 
-      // Periksa apakah nama tamu sudah pernah dicatat sebelumnya
-      var existingData = guestSheet.getDataRange().getValues();
+      // Cek apakah nama tamu sudah ada agar tidak membuat baris duplikat
+      var allData = sheet.getDataRange().getValues();
       var existingRow = -1;
-      for (var r = 1; r < existingData.length; r++) {
-        if (existingData[r][1] && existingData[r][1].toString().trim().toLowerCase() === guestName.toLowerCase()) {
+
+      for (var r = 1; r < allData.length; r++) {
+        var existingName = (allData[r][1] || allData[r][0] || "").toString().trim().toLowerCase();
+        if (existingName === guestName.toLowerCase()) {
           existingRow = r + 1;
           break;
         }
       }
 
       if (existingRow > 0) {
-        // Update tautan & waktu jika nama sudah ada (tidak bikin duplikat)
-        guestSheet.getRange(existingRow, 3).setValue(guestUrl);
-        guestSheet.getRange(existingRow, 4).setValue(timeStr);
+        // Update baris yang sudah ada
+        sheet.getRange(existingRow, 4).setValue(guestUrl); // Link Undangan
+        sheet.getRange(existingRow, 6).setValue(timeStr);  // Waktu
+        sheet.getRange(existingRow, 7).setValue(waFormula); // Link WA
         return ContentService.createTextOutput(JSON.stringify({
           status: "success",
           action: "updated",
-          message: "Data tamu '" + guestName + "' berhasil diperbarui di spreadsheet!"
+          message: "Data tamu '" + guestName + "' berhasil diperbarui di sheet!"
         })).setMimeType(ContentService.MimeType.JSON);
       } else {
-        // Tambah baris baru
-        var nextNo = Math.max(1, guestSheet.getLastRow());
-        guestSheet.appendRow([nextNo, guestName, guestUrl, timeStr, "Siap Dikirim"]);
+        // Tambahkan baris baru
+        var nextNo = Math.max(1, sheet.getLastRow());
+        sheet.appendRow([
+          nextNo,
+          guestName,
+          "Siap Dikirim",
+          guestUrl,
+          "",
+          timeStr,
+          waFormula
+        ]);
         return ContentService.createTextOutput(JSON.stringify({
           status: "success",
           action: "created",
-          message: "Tamu '" + guestName + "' berhasil dicatat otomatis di spreadsheet!"
+          message: "Tamu '" + guestName + "' berhasil dicatat dengan link WhatsApp!"
         })).setMimeType(ContentService.MimeType.JSON);
       }
     }
@@ -148,27 +183,9 @@ function doPost(e) {
     // 2. RSVP & UCAPAN DOA RESTU TAMU
     // ===================================================
     if (data.type === "rsvp") {
-      var rsvpSheet = ss.getSheetByName("Data RSVP");
-      if (!rsvpSheet) {
-        // Cek jika sheet pertama default belum dinamai
-        var firstSheet = ss.getActiveSheet();
-        if (firstSheet.getName() !== "Daftar Tamu") {
-          rsvpSheet = firstSheet;
-          rsvpSheet.setName("Data RSVP");
-        } else {
-          rsvpSheet = ss.insertSheet("Data RSVP");
-        }
-      }
-
-      if (rsvpSheet.getLastRow() === 0) {
-        rsvpSheet.appendRow(["Nama Tamu", "Konfirmasi Kehadiran", "Ucapan & Doa Restu", "Waktu Kirim"]);
-        rsvpSheet.getRange(1, 1, 1, 4)
-          .setFontWeight("bold")
-          .setBackground("#D896A8")
-          .setFontColor("#FFFFFF");
-        rsvpSheet.setFrozenRows(1);
-      }
-
+      var rsvpName = (data.name || "Tamu Undangan").trim();
+      var rsvpStatus = data.status === "hadir" ? "Dateng" : "Maaf lagi repot";
+      var rsvpMsg = data.message || "";
       var nowRsvp = new Date();
       var rsvpTime = nowRsvp.toLocaleDateString("id-ID", {
         day: 'numeric',
@@ -177,16 +194,38 @@ function doPost(e) {
         minute: '2-digit'
       });
 
-      rsvpSheet.appendRow([
-        data.name || "Tamu Undangan",
-        data.status === "hadir" ? "Dateng" : "Maaf lagi repot",
-        data.message || "",
-        rsvpTime
-      ]);
+      // Cek apakah tamu ini sudah tercatat sebelumnya di sheet
+      var rows = sheet.getDataRange().getValues();
+      var foundRow = -1;
+
+      for (var k = 1; k < rows.length; k++) {
+        var rowName = (rows[k][1] || rows[k][0] || "").toString().trim().toLowerCase();
+        if (rowName === rsvpName.toLowerCase()) {
+          foundRow = k + 1;
+          break;
+        }
+      }
+
+      if (foundRow > 0) {
+        sheet.getRange(foundRow, 3).setValue(rsvpStatus); // Status Kehadiran
+        sheet.getRange(foundRow, 5).setValue(rsvpMsg);    // Ucapan Doa
+        sheet.getRange(foundRow, 6).setValue(rsvpTime);   // Waktu Kirim
+      } else {
+        var num = Math.max(1, sheet.getLastRow());
+        sheet.appendRow([
+          num,
+          rsvpName,
+          rsvpStatus,
+          "",
+          rsvpMsg,
+          rsvpTime,
+          "-"
+        ]);
+      }
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
-        message: "RSVP berhasil disimpan di Google Sheets!"
+        message: "RSVP berhasil disimpan di sheet!"
       })).setMimeType(ContentService.MimeType.JSON);
     }
 

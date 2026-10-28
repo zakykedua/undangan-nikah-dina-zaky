@@ -355,8 +355,8 @@
             📋 Salin Link
           </button>
           <button type="button" class="btn-action" onclick="copyWaText()"
-            style="flex: 1; min-width: 130px; background: #25D366; color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px;">
-            💬 Salin Pesan WA
+            style="flex: 1; min-width: 140px; background: #25D366; color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px;">
+            💬 Kirim WhatsApp Langsung
           </button>
           <a href="https://docs.google.com/spreadsheets/d/1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps/edit" target="_blank" class="btn-action"
             style="background: #107C41; color: #fff; font-size: 0.72rem; padding: 8px 10px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
@@ -736,9 +736,9 @@
 
     function quickCopyGuestWa(url, name) {
       const text = `Assalamu’alaikum Warahmatullahi Wabarakatuh\n\nYth. *${name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Zaky & Dina*\n🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\nDetail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n🔗 ${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\nWassalamu’alaikum Warahmatullahi Wabarakatuh\nKami yang berbahagia,\n*Zaky & Dina*`;
-      navigator.clipboard.writeText(text).then(() => {
-        alert("✨ Teks WhatsApp untuk " + name + " berhasil disalin!");
-      });
+      navigator.clipboard.writeText(text).catch(() => {});
+      const waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+      window.open(waUrl, "_blank");
     }
 
     function removeGuest(name) {
@@ -779,9 +779,9 @@
 
       const text = `Assalamu’alaikum Warahmatullahi Wabarakatuh\n\nYth. *${name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Zaky & Dina*\n🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\nDetail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n🔗 ${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\nWassalamu’alaikum Warahmatullahi Wabarakatuh\nKami yang berbahagia,\n*Zaky & Dina*`;
 
-      navigator.clipboard.writeText(text).then(() => {
-        alert("✨ Teks pesan WhatsApp untuk " + name + " berhasil disalin!");
-      });
+      navigator.clipboard.writeText(text).catch(() => {});
+      const waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+      window.open(waUrl, "_blank");
     }
 
     function escapeHtml(str) {
