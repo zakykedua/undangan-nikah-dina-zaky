@@ -33,7 +33,7 @@ const WEDDING_CONFIG = {
   weddingDate: "2027-03-20T07:00:00",
 
   // Google Drive & Google Sheets Integration (Aktif: Buku Tamu Otomatis, Shared Live Album Feed, & RSVP)
-  googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbxJsGcUdxIl8T0ZeGZz1Dyoa62V8ZQ2wDZR34acZDa0UAJzxFEAlNXbcxMcE3sOC3my/exec",
+  googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbwZDBAmhhwYbNcNKRl4yKeVfkaPySngGZifD4YewDHQIHDVVPzVQkTg9TfW2aYPWDJ8/exec",
 
   // Detail Acara Akad Nikah
   akad: {

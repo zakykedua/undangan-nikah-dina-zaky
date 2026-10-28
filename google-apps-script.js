@@ -1,79 +1,316 @@
 /**
- * ===================================================
+ * =========================================================================
  * GOOGLE APPS SCRIPT - ZAKY & DINA WEDDING
- * Struktur 2 Tab Google Spreadsheet:
- * 1. "tamu" (Nomor, Nama, Link Undangan, Tgl Pembuatan, Kirim WhatsApp)
- * 2. "album foto tamu" (Nama Tamu, Data Foto, Catatan Foto, Waktu Upload)
- * 
- * SPREADSHEET ID: 1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps
- * DRIVE FOLDER ID: 1eYoURu3wO9U0gouLlvFx6F51xy11VesF
- * ===================================================
+ * =========================================================================
+ * STRUKTUR SPREADSHEET TEPAT 2 TAB:
+ * 1. "tamu"            : Nomor | Nama | Link Undangan | Tgl Pembuatan | Kirim WhatsApp
+ * 2. "album foto tamu" : Nama Tamu | Data Foto | Catatan Foto | Waktu Upload
+ *
+ * SPREADSHEET ID : 1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps
+ * DRIVE FOLDER ID : 1eYoURu3wO9U0gouLlvFx6F51xy11VesF
+ * =========================================================================
  */
 
 var SPREADSHEET_ID = "1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps";
 var DRIVE_FOLDER_ID = "1eYoURu3wO9U0gouLlvFx6F51xy11VesF";
 
 /**
- * Tab 1: Mengambil / Menyiapkan Sheet "tamu"
+ * FUNGSI UTAMA: PERBAIKI & RAPIKAN SPREADSHEET JADI 2 TAB BERSIH
+ * Jalankan fungsi ini langsung dari editor Apps Script (pilih 'cleanAndSetupSpreadsheet' lalu klik 'Run'),
+ * atau otomatis dipanggil lewat Web App URL.
  */
-function getTamuSheet(ss) {
-  var sheet = ss.getSheetByName("tamu");
-  if (!sheet) {
-    // Jika ada sheet pertama yang bukan "album foto tamu", rename jadi "tamu"
-    var firstSheet = ss.getSheets()[0];
-    if (firstSheet && firstSheet.getName() !== "album foto tamu") {
-      sheet = firstSheet;
-      sheet.setName("tamu");
-    } else {
-      sheet = ss.insertSheet("tamu");
+function cleanAndSetupSpreadsheet() {
+  var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  var allSheets = ss.getSheets();
+
+  var rawPhotos = [];
+  var rawGuests = [];
+  var seenGuestNames = {};
+
+  // 1. Pindai semua sheet yang ada untuk mengambil data yang mungkin bercampur
+  for (var s = 0; s < allSheets.length; s++) {
+    var curSheet = allSheets[s];
+    var data = curSheet.getDataRange().getValues();
+
+    for (var r = 0; r < data.length; r++) {
+      var row = data[r];
+      var rowStr = row.join(" ");
+
+      // Abaikan header umum
+      if (r === 0 && (rowStr.indexOf("Nama Tamu") !== -1 || rowStr.indexOf("Link Undangan") !== -1)) {
+        continue;
+      }
+
+      var isGuest = false;
+      var guestName = "";
+      var guestUrl = "";
+      var guestDate = "";
+
+      // Deteksi baris Tamu Undangan (ada link zakykedua.github.io atau u= atau 'Siap Dikirim')
+      for (var c = 0; c < row.length; c++) {
+        var cellVal = (row[c] || "").toString().trim();
+        if (cellVal.indexOf("zakykedua.github.io") !== -1 || cellVal.indexOf("?u=") !== -1) {
+          isGuest = true;
+          guestUrl = cellVal;
+        }
+      }
+
+      if (isGuest) {
+        // Cari nama tamu di baris ini
+        for (var c2 = 0; c2 < row.length; c2++) {
+          var val2 = (row[c2] || "").toString().trim();
+          if (!val2) continue;
+          if (val2 === guestUrl) continue;
+          if (val2 === "Siap Dikirim") continue;
+          if (val2.indexOf("WhatsApp") !== -1) continue;
+          if (/^\d+$/.test(val2)) continue; // Hanya angka (nomor urut)
+          if (val2.indexOf("202") !== -1 && (val2.indexOf("Okt") !== -1 || val2.indexOf(":") !== -1)) {
+            guestDate = val2;
+            continue;
+          }
+          if (!guestName && val2.length > 1) {
+            guestName = val2;
+          }
+        }
+
+        if (guestName) {
+          var key = guestName.toLowerCase();
+          if (!seenGuestNames[key]) {
+            seenGuestNames[key] = true;
+            rawGuests.push({
+              name: guestName,
+              url: guestUrl,
+              date: guestDate || formatTanggalIndonesia(new Date())
+            });
+          }
+        }
+      } else {
+        // Cek apakah ini baris Foto
+        var colA = (row[0] || "").toString().trim();
+        var colB = (row[1] || "").toString().trim();
+        var colC = (row[2] || "").toString().trim();
+        var colD = (row[3] || "").toString().trim();
+
+        var isPhoto = false;
+        if (colB.indexOf("data:image") !== -1 || colB.indexOf("googleusercontent.com") !== -1 || colB.indexOf("drive.google.com") !== -1) {
+          isPhoto = true;
+        }
+
+        if (isPhoto) {
+          rawPhotos.push([
+            colA || "Tamu Undangan",
+            colB,
+            colC || "",
+            colD || formatTanggalUpload(new Date())
+          ]);
+        }
+      }
     }
   }
 
-  // Hapus tab lama "Daftar Tamu" jika masih ada agar bersih
-  var oldSheet = ss.getSheetByName("Daftar Tamu");
-  if (oldSheet && ss.getSheets().length > 1) {
-    try { ss.deleteSheet(oldSheet); } catch (e) {}
+  // 2. Siapkan Sheet 1: "tamu"
+  var tamuSheet = ss.getSheetByName("tamu");
+  if (!tamuSheet) {
+    // Cari apakah ada sheet bernama variasi tamu
+    for (var i = 0; i < allSheets.length; i++) {
+      if (allSheets[i].getName().toLowerCase().trim() === "tamu") {
+        tamuSheet = allSheets[i];
+        tamuSheet.setName("tamu");
+        break;
+      }
+    }
+  }
+  if (!tamuSheet) {
+    tamuSheet = ss.insertSheet("tamu", 0);
   }
 
-  // Header 5 Kolom Sesuai Permintaan
-  sheet.getRange(1, 1, 1, 5).setValues([[
+  // Bersihkan dan format tab "tamu"
+  tamuSheet.clear();
+  tamuSheet.getRange(1, 1, 1, 5).setValues([[
     "Nomor",
     "Nama",
     "Link Undangan",
     "Tgl Pembuatan",
     "Kirim WhatsApp"
   ]]);
-  sheet.getRange(1, 1, 1, 5)
-    .setFontWeight("bold")
-    .setBackground("#3B6790")
-    .setFontColor("#FFFFFF");
-  sheet.setFrozenRows(1);
 
-  return sheet;
-}
+  // Styling Header Tab Tamu: Biru Elegan
+  var headerTamu = tamuSheet.getRange(1, 1, 1, 5);
+  headerTamu.setFontWeight("bold")
+    .setBackground("#1B365D")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  tamuSheet.setRowHeight(1, 35);
+  tamuSheet.setFrozenRows(1);
 
-/**
- * Tab 2: Mengambil / Menyiapkan Sheet "album foto tamu"
- */
-function getAlbumSheet(ss) {
-  var sheet = ss.getSheetByName("album foto tamu");
-  if (!sheet) {
-    sheet = ss.insertSheet("album foto tamu");
+  // Set lebar kolom tamu agar rapi
+  tamuSheet.setColumnWidth(1, 65);  // Nomor
+  tamuSheet.setColumnWidth(2, 220); // Nama
+  tamuSheet.setColumnWidth(3, 380); // Link Undangan
+  tamuSheet.setColumnWidth(4, 160); // Tgl Pembuatan
+  tamuSheet.setColumnWidth(5, 170); // Kirim WhatsApp
+
+  // Masukkan data tamu
+  for (var g = 0; g < rawGuests.length; g++) {
+    var guest = rawGuests[g];
+    var rowIdx = g + 2;
+    var waFormula = getWaFormula(guest.name, guest.url);
+
+    tamuSheet.getRange(rowIdx, 1).setValue(g + 1).setHorizontalAlignment("center");
+    tamuSheet.getRange(rowIdx, 2).setValue(guest.name).setFontWeight("bold");
+    tamuSheet.getRange(rowIdx, 3).setValue(guest.url);
+    tamuSheet.getRange(rowIdx, 4).setValue(guest.date).setHorizontalAlignment("center");
+    tamuSheet.getRange(rowIdx, 5).setValue(waFormula).setHorizontalAlignment("center");
+    tamuSheet.setRowHeight(rowIdx, 28);
   }
 
-  // Header 4 Kolom Sesuai Permintaan
-  sheet.getRange(1, 1, 1, 4).setValues([[
+  // 3. Siapkan Sheet 2: "album foto tamu"
+  var albumSheet = ss.getSheetByName("album foto tamu");
+  if (!albumSheet) {
+    for (var j = 0; j < allSheets.length; j++) {
+      var sName = allSheets[j].getName().toLowerCase().trim();
+      if (sName === "album foto tamu" || sName === "album foto" || sName === "album") {
+        albumSheet = allSheets[j];
+        albumSheet.setName("album foto tamu");
+        break;
+      }
+    }
+  }
+  if (!albumSheet) {
+    albumSheet = ss.insertSheet("album foto tamu", 1);
+  }
+
+  // Bersihkan dan format tab "album foto tamu"
+  albumSheet.clear();
+  albumSheet.getRange(1, 1, 1, 4).setValues([[
     "Nama Tamu",
     "Data Foto",
     "Catatan Foto",
     "Waktu Upload"
   ]]);
-  sheet.getRange(1, 1, 1, 4)
-    .setFontWeight("bold")
-    .setBackground("#D896A8")
-    .setFontColor("#FFFFFF");
-  sheet.setFrozenRows(1);
 
+  // Styling Header Tab Album: Burgundy / Maroon Mewah
+  var headerAlbum = albumSheet.getRange(1, 1, 1, 4);
+  headerAlbum.setFontWeight("bold")
+    .setBackground("#881337")
+    .setFontColor("#FFFFFF")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  albumSheet.setRowHeight(1, 35);
+  albumSheet.setFrozenRows(1);
+
+  // Set lebar kolom album
+  albumSheet.setColumnWidth(1, 180); // Nama Tamu
+  albumSheet.setColumnWidth(2, 380); // Data Foto
+  albumSheet.setColumnWidth(3, 220); // Catatan Foto
+  albumSheet.setColumnWidth(4, 150); // Waktu Upload
+
+  if (rawPhotos.length > 0) {
+    albumSheet.getRange(2, 1, rawPhotos.length, 4).setValues(rawPhotos);
+    for (var p = 0; p < rawPhotos.length; p++) {
+      albumSheet.setRowHeight(p + 2, 28);
+    }
+  }
+
+  // 4. Urutkan posisi tab: 1. tamu, 2. album foto tamu
+  ss.setActiveSheet(tamuSheet);
+  ss.moveActiveSheet(1);
+  ss.setActiveSheet(albumSheet);
+  ss.moveActiveSheet(2);
+
+  // 5. Hapus sheet tambahan yang tidak digunakan jika ada
+  var currentSheets = ss.getSheets();
+  for (var k = 0; k < currentSheets.length; k++) {
+    var checkName = currentSheets[k].getName().toLowerCase().trim();
+    if (checkName !== "tamu" && checkName !== "album foto tamu") {
+      try {
+        if (currentSheets.length > 2) {
+          ss.deleteSheet(currentSheets[k]);
+        }
+      } catch (e) {}
+    }
+  }
+
+  return {
+    status: "success",
+    message: "Spreadsheet Zaky & Dina sukses dirapikan menjadi 2 tab terpisah!",
+    totalTamu: rawGuests.length,
+    totalFoto: rawPhotos.length
+  };
+}
+
+/**
+ * Tab 1: Mengambil Sheet "tamu"
+ */
+function getTamuSheet(ss) {
+  var sheet = ss.getSheetByName("tamu");
+  if (!sheet) {
+    var sheets = ss.getSheets();
+    for (var i = 0; i < sheets.length; i++) {
+      if (sheets[i].getName().toLowerCase().trim() === "tamu") {
+        sheet = sheets[i];
+        break;
+      }
+    }
+    if (!sheet) {
+      sheet = ss.insertSheet("tamu", 0);
+    }
+  }
+  sheet.setName("tamu");
+
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, 5).setValues([[
+      "Nomor",
+      "Nama",
+      "Link Undangan",
+      "Tgl Pembuatan",
+      "Kirim WhatsApp"
+    ]]);
+    sheet.getRange(1, 1, 1, 5)
+      .setFontWeight("bold")
+      .setBackground("#1B365D")
+      .setFontColor("#FFFFFF")
+      .setHorizontalAlignment("center");
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+/**
+ * Tab 2: Mengambil Sheet "album foto tamu"
+ */
+function getAlbumSheet(ss) {
+  var sheet = ss.getSheetByName("album foto tamu");
+  if (!sheet) {
+    var sheets = ss.getSheets();
+    for (var i = 0; i < sheets.length; i++) {
+      var n = sheets[i].getName().toLowerCase().trim();
+      if (n === "album foto tamu" || n === "album" || n === "album foto") {
+        sheet = sheets[i];
+        break;
+      }
+    }
+    if (!sheet) {
+      sheet = ss.insertSheet("album foto tamu", 1);
+    }
+  }
+  sheet.setName("album foto tamu");
+
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, 4).setValues([[
+      "Nama Tamu",
+      "Data Foto",
+      "Catatan Foto",
+      "Waktu Upload"
+    ]]);
+    sheet.getRange(1, 1, 1, 4)
+      .setFontWeight("bold")
+      .setBackground("#881337")
+      .setFontColor("#FFFFFF")
+      .setHorizontalAlignment("center");
+    sheet.setFrozenRows(1);
+  }
   return sheet;
 }
 
@@ -95,6 +332,25 @@ function getWaFormula(guestName, guestUrl) {
 
   var encoded = encodeURIComponent(text);
   return '=HYPERLINK("https://api.whatsapp.com/send?text=' + encoded + '", "💬 Kirim WhatsApp")';
+}
+
+function formatTanggalIndonesia(d) {
+  return d.toLocaleDateString("id-ID", {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function formatTanggalUpload(d) {
+  return d.toLocaleDateString("id-ID", {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 }
 
 /**
@@ -148,10 +404,13 @@ function doGet(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // 3. Default: Respon Sehat (Status OK)
+    // 3. Otomatis Rapikan Sheet jika dipanggil langsung atau action=fixSheet
+    var cleanResult = cleanAndSetupSpreadsheet();
+
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
-      message: "Webhook Zaky & Dina Aktif",
+      message: "Webhook Zaky & Dina Aktif & Spreadsheet Terverifikasi!",
+      detail: cleanResult,
       tabs: ["tamu", "album foto tamu"]
     })).setMimeType(ContentService.MimeType.JSON);
 
@@ -186,14 +445,7 @@ function doPost(e) {
       }
 
       var guestUrl = data.url || "";
-      var now = new Date();
-      var timeStr = now.toLocaleDateString("id-ID", {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      var timeStr = formatTanggalIndonesia(new Date());
       var waFormula = getWaFormula(guestName, guestUrl);
 
       // Cek apakah nama tamu sudah ada agar tidak duplikat
@@ -228,6 +480,13 @@ function doPost(e) {
           timeStr,
           waFormula
         ]);
+        var lastRow = tamuSheet.getLastRow();
+        tamuSheet.setRowHeight(lastRow, 28);
+        tamuSheet.getRange(lastRow, 1).setHorizontalAlignment("center");
+        tamuSheet.getRange(lastRow, 2).setFontWeight("bold");
+        tamuSheet.getRange(lastRow, 4).setHorizontalAlignment("center");
+        tamuSheet.getRange(lastRow, 5).setHorizontalAlignment("center");
+
         return ContentService.createTextOutput(JSON.stringify({
           status: "success",
           action: "created",
@@ -264,13 +523,7 @@ function doPost(e) {
       }
 
       var directPhotoUrl = "https://lh3.googleusercontent.com/d/" + file.getId();
-      var nowUpload = new Date();
-      var uploadTimeStr = nowUpload.toLocaleDateString("id-ID", {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      var uploadTimeStr = formatTanggalUpload(new Date());
 
       // Catat ke Tab "album foto tamu": Nama Tamu, Data Foto, Catatan Foto, Waktu Upload
       var albumSheet = getAlbumSheet(ss);
@@ -280,6 +533,8 @@ function doPost(e) {
         data.caption || "",
         uploadTimeStr
       ]);
+      var lastPhotoRow = albumSheet.getLastRow();
+      albumSheet.setRowHeight(lastPhotoRow, 28);
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
