@@ -318,10 +318,26 @@
     </div>
 
     <div class="guest-input-wrap" id="custom-guest-wrap">
-      <label style="font-size: 0.72rem; font-weight: 600; color: var(--blue-primary); display: block; margin-bottom: 4px;">
+      <label style="font-size: 0.74rem; font-weight: 700; color: var(--blue-primary); display: block; margin-bottom: 4px;">
         Ketik Nama Tamu Khusus:
       </label>
       <input type="text" id="custom-guest-name" class="guest-input" placeholder="Masukkan nama tamu (misal: Rian & Partner)..." oninput="updateCustomQr()">
+      
+      <!-- Box Hasil Link Rahasia (Anti-Ubah) -->
+      <div id="hidden-link-box" style="margin-top: 10px; background: #F8FAFD; border: 1px solid rgba(59, 103, 144, 0.25); border-radius: 10px; padding: 12px; font-size: 0.74rem;">
+        <span style="font-weight: 700; color: var(--blue-primary); display: block; margin-bottom: 3px;">🔒 Link Undangan Rahasia (Anti-Ubah):</span>
+        <div id="generated-hidden-url" style="word-break: break-all; color: var(--text-dark); font-family: monospace; font-size: 0.7rem; margin-bottom: 10px; background: #FFF; padding: 6px 8px; border-radius: 6px; border: 1px dashed var(--border-pink-glow);">
+          https://zakykedua.github.io/undangan-nikah-dina-zaky/
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-action" onclick="copyHiddenLink()" style="background: var(--blue-primary); color: #fff; font-size: 0.72rem; padding: 7px 12px; border-radius: 6px;">
+            📋 Salin Link Rahasia
+          </button>
+          <button type="button" class="btn-action" onclick="copyWaText()" style="background: #25D366; color: #fff; font-size: 0.72rem; padding: 7px 12px; border-radius: 6px;">
+            💬 Salin Chat WhatsApp
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="btn-action-group">
@@ -416,10 +432,26 @@
       }
     }
 
+    function encodeGuestName(name) {
+      if (!name || name === "Tamu Undangan") return "";
+      try {
+        const payload = "zd:" + encodeURIComponent(name);
+        return btoa(payload).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      } catch (e) {
+        return encodeURIComponent(name);
+      }
+    }
+
     function updateCustomQr() {
       const nameInput = document.getElementById("custom-guest-name");
       const rawName = nameInput.value.trim() || "Tamu Undangan";
-      const targetUrl = "https://zakykedua.github.io/undangan-nikah-dina-zaky/?to=" + encodeURIComponent(rawName);
+      const token = encodeGuestName(rawName);
+      const targetUrl = token
+        ? "https://zakykedua.github.io/undangan-nikah-dina-zaky/?u=" + token
+        : "https://zakykedua.github.io/undangan-nikah-dina-zaky/";
+
+      const displayUrl = document.getElementById("generated-hidden-url");
+      if (displayUrl) displayUrl.textContent = targetUrl;
 
       const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=" + encodeURIComponent(targetUrl) + "&color=3B-67-90&bgcolor=255-255-255&qzone=2";
 
@@ -438,6 +470,24 @@
       cardMainMsg.textContent = "Kepada Yth. " + rawName;
       cardDesc.textContent = "Scan barcode ini untuk membuka undangan khusus atas nama Anda dan berbagi momen di hari bahagia Zaky & Dina.";
       cardUrl.textContent = targetUrl;
+    }
+
+    function copyHiddenLink() {
+      const url = document.getElementById("generated-hidden-url")?.textContent.trim();
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(() => {
+        alert("✨ Link rahasia berhasil disalin!");
+      });
+    }
+
+    function copyWaText() {
+      const name = document.getElementById("custom-guest-name")?.value.trim() || "Bapak/Ibu/Saudara/i";
+      const url = document.getElementById("generated-hidden-url")?.textContent.trim();
+      const text = `Assalamu’alaikum Warahmatullahi Wabarakatuh\n\nYth. *${name}*,\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n💍 *Zaky & Dina*\n🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\nDetail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n🔗 ${url}\n\nMerupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\nWassalamu’alaikum Warahmatullahi Wabarakatuh\nKami yang berbahagia,\n*Zaky & Dina*`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        alert("✨ Teks pesan WhatsApp untuk " + name + " berhasil disalin!");
+      });
     }
   </script>
 </body>

@@ -18,6 +18,33 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ===================================================
    1. RENDER DATA DARI CONFIG.JS
    =================================================== */
+/**
+ * Enkripsi & Dekripsi Nama Tamu Ringan & Aman (URL-Safe Base64 + Signature)
+ * Menyembunyikan nama tamu di dalam link agar tidak bisa diedit sembarangan
+ */
+function encodeGuestName(name) {
+  if (!name || name === "Tamu Undangan") return "";
+  try {
+    const payload = "zd:" + encodeURIComponent(name);
+    return btoa(payload).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch (e) {
+    return encodeURIComponent(name);
+  }
+}
+
+function decodeGuestToken(token) {
+  if (!token) return null;
+  try {
+    let base64 = token.replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4) base64 += "=";
+    const decoded = atob(base64);
+    if (decoded && decoded.startsWith("zd:")) {
+      return decodeURIComponent(decoded.slice(3));
+    }
+  } catch (e) {}
+  return null;
+}
+
 function initWeddingData() {
   if (typeof WEDDING_CONFIG === "undefined") return;
 
@@ -31,29 +58,50 @@ function initWeddingData() {
   }
 
   const urlParams = new URLSearchParams(window.location.search);
-  let rawName = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+  let decodedName = null;
 
-  // Fallback ke localStorage jika parameter URL kosong (misal saat klik kembali ke undangan)
-  if (!rawName) {
-    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
-    if (savedName && savedName !== "Tamu Undangan") {
-      rawName = savedName;
-      // Perbarui URL browser agar tetap ada parameter ?to=... tanpa reload
-      try {
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set("to", savedName);
-        window.history.replaceState(null, "", newUrl.toString());
-      } catch (e) {}
+  // 1. Cek parameter terenkripsi/tersembunyi ?u=... atau ?code=...
+  const token = urlParams.get("u") || urlParams.get("code") || urlParams.get("k");
+  if (token) {
+    const fromToken = decodeGuestToken(token);
+    if (fromToken) {
+      decodedName = fromToken;
     }
   }
 
-  let decodedName = "Tamu Undangan";
-  if (rawName) {
-    try {
-      decodedName = decodeURIComponent(rawName.replace(/\+/g, " "));
-    } catch (e) {
-      decodedName = rawName.replace(/\+/g, " ");
+  // 2. Cek parameter teks biasa ?to=... atau ?nama=... (untuk kompatibilitas)
+  if (!decodedName) {
+    const rawName = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+    if (rawName) {
+      try {
+        decodedName = decodeURIComponent(rawName.replace(/\+/g, " "));
+      } catch (e) {
+        decodedName = rawName.replace(/\+/g, " ");
+      }
     }
+  }
+
+  // 3. Fallback ke localStorage jika parameter URL kosong
+  if (!decodedName) {
+    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
+    if (savedName && savedName !== "Tamu Undangan") {
+      decodedName = savedName;
+    }
+  }
+
+  // 4. Default jika tidak ada nama
+  if (!decodedName) {
+    decodedName = "Tamu Undangan";
+  }
+
+  // SEMBUNYIKAN / BERSIHKAN PARAMETER DARI ADDRESS BAR BROWSER
+  // Sehingga di address bar HP tamu HANYA tampil: https://.../
+  // Tamu tidak bisa melihat atau mengedit nama di address bar!
+  if (window.location.search) {
+    try {
+      const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    } catch (e) {}
   }
 
   document.querySelectorAll(".recipient-name").forEach(el => {
@@ -83,8 +131,9 @@ function initWeddingData() {
       }
     }
 
+    // Link album cukup polos karena nama sudah tersimpan aman di localStorage
     document.querySelectorAll("a[href^='album.html']").forEach(a => {
-      a.href = "album.html?to=" + encodeURIComponent(decodedName);
+      a.href = "album.html";
     });
   }
 

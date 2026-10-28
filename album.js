@@ -88,44 +88,69 @@ function initGuestAlbumApp() {
   checkQrWelcomeModal();
 }
 
+function decodeGuestToken(token) {
+  if (!token) return null;
+  try {
+    let base64 = token.replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4) base64 += "=";
+    const decoded = atob(base64);
+    if (decoded && decoded.startsWith("zd:")) {
+      return decodeURIComponent(decoded.slice(3));
+    }
+  } catch (e) {}
+  return null;
+}
+
 function initGuestNameAndLock() {
   const urlParams = new URLSearchParams(window.location.search);
-  let guestNameParam = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+  let parsedName = null;
 
-  // Fallback ke localStorage jika parameter URL kosong (misal saat dibuka kembali dari index.html)
-  if (!guestNameParam) {
-    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
-    if (savedName && savedName !== "Tamu Undangan") {
-      guestNameParam = savedName;
+  // 1. Cek parameter terenkripsi ?u=... atau ?code=...
+  const token = urlParams.get("u") || urlParams.get("code") || urlParams.get("k");
+  if (token) {
+    parsedName = decodeGuestToken(token);
+  }
+
+  // 2. Cek parameter teks biasa ?to=... (kompatibilitas)
+  if (!parsedName) {
+    const guestNameParam = urlParams.get("to") || urlParams.get("n") || urlParams.get("nama") || urlParams.get("tamu") || urlParams.get("guest");
+    if (guestNameParam) {
       try {
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set("to", savedName);
-        window.history.replaceState(null, "", newUrl.toString());
-      } catch (e) {}
+        parsedName = decodeURIComponent(guestNameParam.replace(/\+/g, " "));
+      } catch (e) {
+        parsedName = guestNameParam.replace(/\+/g, " ");
+      }
     }
   }
 
-  let parsedName = "Tamu Undangan";
-  if (guestNameParam) {
-    try {
-      parsedName = decodeURIComponent(guestNameParam.replace(/\+/g, " "));
-    } catch (e) {
-      parsedName = guestNameParam.replace(/\+/g, " ");
+  // 3. Fallback ke localStorage jika parameter URL kosong
+  if (!parsedName) {
+    const savedName = localStorage.getItem("zaky_dina_current_guest_name") || localStorage.getItem("zaky_dina_locked_guest_name");
+    if (savedName && savedName !== "Tamu Undangan") {
+      parsedName = savedName;
     }
+  }
+
+  if (!parsedName) {
+    parsedName = "Tamu Undangan";
+  }
+
+  // Sembunyikan parameter URL dari address bar agar rapi dan tidak bisa diedit
+  if (window.location.search && !urlParams.get("from")) {
+    try {
+      const cleanUrl = window.location.origin + window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, cleanUrl);
+    } catch (e) {}
   }
 
   const nameInput = document.getElementById("global-guest-name");
   const lockInfo = document.getElementById("identity-lock-info");
   const lockedTag = document.querySelector(".locked-tag");
 
-  // Update tombol "← Kembali ke Undangan" agar selalu membawa parameter nama tamu ke index.html
+  // Tombol "← Kembali ke Undangan" langsung ke index.html karena nama tersimpan di localStorage
   const backBtn = document.querySelector(".btn-back");
   if (backBtn) {
-    if (parsedName && parsedName !== "Tamu Undangan") {
-      backBtn.href = "index.html?to=" + encodeURIComponent(parsedName);
-    } else {
-      backBtn.href = "index.html";
-    }
+    backBtn.href = "index.html";
   }
 
   if (parsedName && parsedName !== "Tamu Undangan") {
