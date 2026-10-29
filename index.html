@@ -358,43 +358,45 @@
       </p>
 
       <div class="gift-grid reveal-on-scroll delay-200">
-        <!-- Kotak Gambar QRIS -->
-        <div class="qris-img-wrapper" onclick="openLightbox('assets/images/qris.jpg')"
-          title="Klik untuk memperbesar QRIS">
-          <img id="qris-img" src="assets/images/qris.jpg" alt="QRIS Muhammad Zaky Jaluaji">
+        <!-- 1. KARTU QRIS -->
+        <div class="qris-card">
+          <!-- Kotak Gambar QRIS -->
+          <div class="qris-img-wrapper" onclick="openLightbox('assets/images/qris.jpg')"
+            title="Klik untuk memperbesar QRIS">
+            <img id="qris-img" src="assets/images/qris.jpg" alt="QRIS Muhammad Zaky Jaluaji">
+          </div>
+          <!-- Tombol Aksi QRIS -->
+          <div class="qris-btn-group">
+            <a href="assets/images/qris.jpg" download="QRIS_Muhammad_Zaky_Jaluaji.jpg" class="btn-copy">
+              <span>⬇️ Unduh Gambar QRIS</span>
+            </a>
+            <button type="button" class="btn-copy" onclick="openLightbox('assets/images/qris.jpg')">
+              <span>🔍 Perbesar QRIS</span>
+            </button>
+          </div>
         </div>
-        <!-- Tombol Aksi QRIS -->
-        <div class="qris-btn-group">
-          <a href="assets/images/qris.jpg" download="QRIS_Muhammad_Zaky_Jaluaji.jpg" class="btn-copy">
-            <span>⬇️ Unduh Gambar QRIS</span>
-          </a>
-          <button type="button" class="btn-copy" onclick="openLightbox('assets/images/qris.jpg')">
-            <span>🔍 Perbesar QRIS</span>
+
+        <!-- 2. KARTU ALAMAT KADO FISIK -->
+        <div class="bank-card">
+          <div class="qris-badge"
+            style="background: rgba(216, 150, 168, 0.15); border-color: rgba(216, 150, 168, 0.4); color: var(--pink-primary);">
+            🎁 Kirim kado aja
+          </div>
+          <div class="bank-name" style="font-size: 1.25rem; margin-top: 4px;">Alamat Pengiriman Kado</div>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin: 12px 0 16px; line-height: 1.6;">
+            Penerima: <strong id="gift-recipient" style="color: var(--text-dark);">Zaky & Dina</strong> (<span
+              id="gift-phone">089644456263</span>)<br>
+            <span id="gift-full-address"
+              style="font-weight: 500; color: var(--text-dark); display: block; margin-top: 4px;">
+              Perumahan Kurung Indah, No. 35, Kurung, Ceper, Klaten
+            </span>
+          </p>
+          <button type="button" class="btn-copy" onclick="copyGiftAddress()">
+            <span>📋 Salin Alamat Lengkap</span>
           </button>
         </div>
       </div>
-
-      <!-- 2. KARTU ALAMAT KADO FISIK -->
-      <div class="bank-card">
-        <div class="qris-badge"
-          style="background: rgba(216, 150, 168, 0.15); border-color: rgba(216, 150, 168, 0.4); color: var(--pink-primary);">
-          🎁 Kirim kado aja
-        </div>
-        <div class="bank-name" style="font-size: 1.25rem; margin-top: 4px;">Alamat Pengiriman Kado</div>
-        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 12px 0 16px; line-height: 1.6;">
-          Penerima: <strong id="gift-recipient" style="color: var(--text-dark);">Zaky & Dina</strong> (<span
-            id="gift-phone">089644456263</span>)<br>
-          <span id="gift-full-address"
-            style="font-weight: 500; color: var(--text-dark); display: block; margin-top: 4px;">
-            Perumahan Kurung Indah, No. 35, Kurung, Ceper, Klaten
-          </span>
-        </p>
-        <button type="button" class="btn-copy" onclick="copyGiftAddress()">
-          <span>📋 Salin Alamat Lengkap</span>
-        </button>
-      </div>
-  </div>
-  </section>
+    </section>
 
   <!-- ===================================================
          FOOTER
