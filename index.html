@@ -354,29 +354,26 @@
       <p class="reveal-on-scroll delay-100"
         style="text-align: center; color: var(--text-muted); margin-bottom: 24px; font-size: 0.88rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6;">
         Doa restu kamu sudah cukup bagi kami. Tapiiii kalauuu kamu pengen ngamplop onglen, kamu bisa pakai QRIS ini
-        yahhh... atau mengirimkan kado fisik ke alamat kami:
+        yahhh... atau mengirimkan kado fisik ke alamat kami, hehe
       </p>
 
       <div class="gift-grid reveal-on-scroll delay-200">
         <!-- 1. KARTU QRIS -->
         <div class="qris-card">
           <div class="qris-badge">
-            💳 Amplop Digital (QRIS)
+            TF aja yahhh
           </div>
           <!-- Kotak Gambar QRIS -->
           <div class="qris-img-wrapper">
             <img id="qris-img" src="assets/images/qris.jpg" alt="QRIS Muhammad Zaky Jaluaji">
           </div>
-          <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; line-height: 1.45;">
-            Dapat discan langsung menggunakan BCA, Mandiri, BRI, BNI, GoPay, OVO, Dana, ShopeePay, dan aplikasi pembayaran lainnya.
-          </p>
         </div>
 
         <!-- 2. KARTU ALAMAT KADO FISIK -->
         <div class="bank-card">
           <div class="qris-badge"
             style="background: rgba(216, 150, 168, 0.15); border-color: rgba(216, 150, 168, 0.4); color: var(--pink-primary);">
-            🎁 Kirim kado aja
+            Kirim kado aja
           </div>
           <div class="bank-name" style="font-size: 1.25rem; margin-top: 4px;">Alamat Pengiriman Kado</div>
           <p style="font-size: 0.88rem; color: var(--text-muted); margin: 12px 0 16px; line-height: 1.6;">
@@ -396,23 +393,23 @@
         <div class="gift-confirm-card">
           <div class="qris-badge"
             style="background: rgba(30, 130, 76, 0.12); border-color: rgba(30, 130, 76, 0.3); color: #1e824c;">
-            💌 Konfirmasi Tanda Kasih
+            Konfirmasi
           </div>
           <h4 class="gift-confirm-title">Konfirmasi Amplop Digital & Kado</h4>
           <p class="gift-confirm-desc">
-            Bagi Bapak/Ibu/Saudara/i yang telah mengirimkan amplop digital (QRIS) atau kado fisik, silakan mengisi formulir di bawah ini agar data dapat kami catat:
+            Temen-temen yang udah ngamplop onglen atau kado fisik, mintol isi formulir di bawah ini biar kami catat:
           </p>
 
           <form id="gift-confirm-form" onsubmit="handleGiftConfirmSubmit(event)">
             <!-- 1. Nama Pengirim -->
             <div class="form-group">
-              <label class="form-label" for="gift-sender-name">Nama Pengirim *</label>
+              <label class="form-label" for="gift-sender-name">Namanya siapa? *</label>
               <input type="text" id="gift-sender-name" class="form-input" placeholder="Masukkan nama Anda..." required>
             </div>
 
             <!-- 2. Dropdown Pilihan: QRIS atau Kado -->
             <div class="form-group">
-              <label class="form-label" for="gift-type-select">Jenis Tanda Kasih *</label>
+              <label class="form-label" for="gift-type-select">Jenis *</label>
               <select id="gift-type-select" class="form-select" onchange="toggleGiftAmountField()" required>
                 <option value="QRIS">QRIS (Amplop Digital)</option>
                 <option value="Kado Fisik">Kado Fisik</option>
@@ -422,17 +419,21 @@
             <!-- 3. Nominal (Hanya Muncul Jika QRIS, Opsional) -->
             <div class="form-group" id="gift-amount-group">
               <label class="form-label" for="gift-amount">
-                Nominal Transfer <span style="font-size: 0.74rem; font-weight: normal; color: var(--text-muted); text-transform: none;">(Opsional)</span>
+                Nominal Transfer <span
+                  style="font-size: 0.74rem; font-weight: normal; color: var(--text-muted); text-transform: none;">(Opsional)</span>
               </label>
-              <input type="text" id="gift-amount" class="form-input" placeholder="Contoh: 100.000 (Boleh dikosongkan)" oninput="formatRupiahInput(this)">
+              <input type="text" id="gift-amount" class="form-input" placeholder="Contoh: 100.000 (Boleh dikosongkan)"
+                oninput="formatRupiahInput(this)">
             </div>
 
             <!-- 4. Catatan / Pesan Singkat (Opsional) -->
             <div class="form-group">
               <label class="form-label" for="gift-note">
-                Catatan / Doa Singkat <span style="font-size: 0.74rem; font-weight: normal; color: var(--text-muted); text-transform: none;">(Opsional)</span>
+                notes <span
+                  style="font-size: 0.74rem; font-weight: normal; color: var(--text-muted); text-transform: none;">(Opsional)</span>
               </label>
-              <input type="text" id="gift-note" class="form-input" placeholder="Contoh: Sudah transfer via BCA / Kado dikirim via kurir">
+              <input type="text" id="gift-note" class="form-input"
+                placeholder="Contoh: Sudah transfer via BCA / Kado dikirim via kurir">
             </div>
 
             <!-- Tombol Kirim Konfirmasi -->
@@ -443,29 +444,24 @@
 
           <!-- Kotak Pesan Sukses -->
           <div id="gift-success-box" class="gift-success-box" style="display: none;">
-            <div style="font-size: 2.2rem; margin-bottom: 8px;">🌸🙏</div>
-            <h5 style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--text-dark); margin-bottom: 6px;">Konfirmasi Berhasil Terkirim!</h5>
+            <h5
+              style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--text-dark); margin-bottom: 6px;">
+              Konfirmasi Berhasil Terkirim!</h5>
             <p id="gift-success-desc" style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.6;">
-              Terima kasih banyak atas perhatian, doa restu, serta tanda kasih yang telah Anda berikan untuk Zaky & Dina.
+              makasih banyak yahhh udah repot repot kirim, semoga kamu juga dilancarkan rezekinya, sehad selalu. mwahh..
             </p>
-            <button type="button" class="btn-copy" onclick="resetGiftConfirmForm()" style="margin: 14px auto 0; font-size: 0.78rem;">
-              <span>Kirim Konfirmasi Lain</span>
-            </button>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- ===================================================
+    <!-- ===================================================
          FOOTER
          =================================================== -->
-  <footer class="reveal-on-scroll">
-    <p>Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.</p>
-    <div class="footer-names">Zaky & Dina</div>
-    <p
-      style="font-size: 0.75rem; margin-top: 16px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink-primary);">
-      Love Forever & Always</p>
-  </footer>
+    <footer class="reveal-on-scroll">
+      <p>btw kami bakal seneng banget kalau kamu bisa dateng ke acara kami, sooo usahain dateng yahhh :D</p>
+      <div class="footer-names">Zaky & Dina</div>
+    </footer>
 
   </div>
 
@@ -484,8 +480,8 @@
     <div class="qr-modal-card">
       <span class="qr-modal-close" onclick="closeQrModal()">&times;</span>
       <h3 class="qr-modal-title">Barcode Kamera Live Tamu</h3>
-      <p class="qr-modal-subtitle">Scan Barcode / QR Code ini dengan HP Anda saat acara untuk langsung mengabadikan
-        momen pernikahan Zaky & Dina!</p>
+      <p class="qr-modal-subtitle">Scan Barcode / QR Code ini dengan HP kamu saat acara untuk langsung mengabadikan
+        momen pernikahan Dina sama Zaky!</p>
 
       <div class="qr-image-wrapper">
         <img src="assets/images/album_qr.png" alt="QR Code Album Live Zaky & Dina">
