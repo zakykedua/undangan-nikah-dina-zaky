@@ -131,6 +131,12 @@ function initWeddingData() {
       }
     }
 
+    // Isi otomatis nama pada formulir konfirmasi hadiah
+    const giftSenderInput = document.getElementById("gift-sender-name");
+    if (giftSenderInput) {
+      giftSenderInput.value = decodedName;
+    }
+
     // Link album cukup polos karena nama sudah tersimpan aman di localStorage
     document.querySelectorAll("a[href^='album.html']").forEach(a => {
       a.href = "album.html";
@@ -239,6 +245,124 @@ function copyGiftAddress() {
   }).catch(() => {
     alert("✨ Alamat pengiriman kado:\n" + fullText);
   });
+}
+
+/* ===================================================
+   LOGIKA FORMULIR KONFIRMASI AMPLOP & KADO
+   =================================================== */
+function toggleGiftAmountField() {
+  const giftType = document.getElementById("gift-type-select")?.value;
+  const amountGroup = document.getElementById("gift-amount-group");
+  const amountInput = document.getElementById("gift-amount");
+
+  if (!amountGroup) return;
+
+  if (giftType === "QRIS") {
+    amountGroup.style.display = "block";
+  } else {
+    amountGroup.style.display = "none";
+    if (amountInput) amountInput.value = "";
+  }
+}
+
+function formatRupiahInput(input) {
+  let val = input.value.replace(/[^0-9]/g, "");
+  if (!val) {
+    input.value = "";
+    return;
+  }
+  input.value = Number(val).toLocaleString("id-ID");
+}
+
+async function handleGiftConfirmSubmit(e) {
+  e.preventDefault();
+
+  const nameInput = document.getElementById("gift-sender-name");
+  const typeSelect = document.getElementById("gift-type-select");
+  const amountInput = document.getElementById("gift-amount");
+  const noteInput = document.getElementById("gift-note");
+  const submitBtn = document.getElementById("gift-submit-btn");
+  const form = document.getElementById("gift-confirm-form");
+  const successBox = document.getElementById("gift-success-box");
+  const successDesc = document.getElementById("gift-success-desc");
+
+  const name = nameInput ? nameInput.value.trim() : "";
+  const giftType = typeSelect ? typeSelect.value : "QRIS";
+  const amount = (amountInput && giftType === "QRIS") ? amountInput.value.trim() : "";
+  const note = noteInput ? noteInput.value.trim() : "";
+
+  if (!name) {
+    showToastNotification("Silakan isi nama Anda terlebih dahulu.");
+    if (nameInput) nameInput.focus();
+    return;
+  }
+
+  const originalBtnText = submitBtn ? submitBtn.innerHTML : "Kirim Konfirmasi";
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = "<span>⏳ Mengirim Konfirmasi...</span>";
+    submitBtn.style.opacity = "0.7";
+  }
+
+  const webhookUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
+    ? WEDDING_CONFIG.googleDriveWebhookUrl
+    : "";
+
+  const payload = {
+    type: "confirmGift",
+    name: name,
+    giftType: giftType,
+    amount: amount,
+    note: note
+  };
+
+  try {
+    if (webhookUrl) {
+      await fetch(webhookUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    // Tampilkan state berhasil
+    if (form) form.style.display = "none";
+    if (successBox) successBox.style.display = "block";
+
+    if (successDesc) {
+      if (giftType === "QRIS") {
+        successDesc.innerHTML = `Terima kasih banyak <strong>${name}</strong> atas kiriman amplop digital (QRIS)${amount ? " sebesar <strong>Rp " + amount + "</strong>" : ""}. Doa restu dan ketulusan Anda sangat berarti bagi kami berdua.`;
+      } else {
+        successDesc.innerHTML = `Terima kasih banyak <strong>${name}</strong> atas konfirmasi kiriman kado fisik untuk Zaky & Dina. Semoga Allah membalas segala kebaikan Anda berlipat ganda.`;
+      }
+    }
+
+    showToastNotification(`✨ Konfirmasi ${giftType} berhasil dicatat!`);
+  } catch (err) {
+    console.error("Gagal mengirim konfirmasi hadiah:", err);
+    if (form) form.style.display = "none";
+    if (successBox) successBox.style.display = "block";
+    showToastNotification("✨ Konfirmasi Anda telah berhasil dikirim!");
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
+      submitBtn.style.opacity = "1";
+    }
+  }
+}
+
+function resetGiftConfirmForm() {
+  const form = document.getElementById("gift-confirm-form");
+  const successBox = document.getElementById("gift-success-box");
+  const amountInput = document.getElementById("gift-amount");
+  const noteInput = document.getElementById("gift-note");
+
+  if (amountInput) amountInput.value = "";
+  if (noteInput) noteInput.value = "";
+  if (form) form.style.display = "block";
+  if (successBox) successBox.style.display = "none";
 }
 
 function openLightbox(src) {

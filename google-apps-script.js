@@ -2,9 +2,10 @@
  * =========================================================================
  * GOOGLE APPS SCRIPT - ZAKY & DINA WEDDING
  * =========================================================================
- * STRUKTUR SPREADSHEET TEPAT 2 TAB:
+ * STRUKTUR SPREADSHEET TEPAT 3 TAB:
  * 1. "tamu"            : Nomor | Nama | Link Undangan | Tgl Pembuatan | Kirim WhatsApp
  * 2. "album foto tamu" : Nama Tamu | Data Foto | Catatan Foto | Waktu Upload
+ * 3. "amplop & kado"   : Nomor | Tanggal & Waktu | Nama Pengirim | Jenis Hadiah | Nominal (Rp) | Catatan / Doa
  *
  * SPREADSHEET ID : 1IWtFG8lAVZSTDJPlKeG4bYC6L8j1MJ6WlZBcCglB9Ps
  * DRIVE FOLDER ID : 1eYoURu3wO9U0gouLlvFx6F51xy11VesF
@@ -213,19 +214,24 @@ function cleanAndSetupSpreadsheet() {
     }
   }
 
-  // 4. Urutkan posisi tab: 1. tamu, 2. album foto tamu
+  // 4. Siapkan Sheet 3: "amplop & kado"
+  var amplopSheet = getAmplopSheet(ss);
+
+  // 5. Urutkan posisi tab: 1. tamu, 2. album foto tamu, 3. amplop & kado
   ss.setActiveSheet(tamuSheet);
   ss.moveActiveSheet(1);
   ss.setActiveSheet(albumSheet);
   ss.moveActiveSheet(2);
+  ss.setActiveSheet(amplopSheet);
+  ss.moveActiveSheet(3);
 
-  // 5. Hapus sheet tambahan yang tidak digunakan jika ada
+  // 6. Hapus sheet tambahan yang tidak digunakan jika ada
   var currentSheets = ss.getSheets();
   for (var k = 0; k < currentSheets.length; k++) {
     var checkName = currentSheets[k].getName().toLowerCase().trim();
-    if (checkName !== "tamu" && checkName !== "album foto tamu") {
+    if (checkName !== "tamu" && checkName !== "album foto tamu" && checkName !== "amplop & kado") {
       try {
-        if (currentSheets.length > 2) {
+        if (currentSheets.length > 3) {
           ss.deleteSheet(currentSheets[k]);
         }
       } catch (e) {}
@@ -234,7 +240,7 @@ function cleanAndSetupSpreadsheet() {
 
   return {
     status: "success",
-    message: "Spreadsheet Zaky & Dina sukses dirapikan menjadi 2 tab terpisah!",
+    message: "Spreadsheet Zaky & Dina sukses dirapikan menjadi 3 tab terpisah!",
     totalTamu: rawGuests.length,
     totalFoto: rawPhotos.length
   };
@@ -310,6 +316,55 @@ function getAlbumSheet(ss) {
       .setFontColor("#FFFFFF")
       .setHorizontalAlignment("center");
     sheet.setFrozenRows(1);
+  }
+  return sheet;
+}
+
+/**
+ * Tab 3: Mengambil Sheet "amplop & kado"
+ */
+function getAmplopSheet(ss) {
+  var sheet = ss.getSheetByName("amplop & kado");
+  if (!sheet) {
+    var sheets = ss.getSheets();
+    for (var i = 0; i < sheets.length; i++) {
+      var n = sheets[i].getName().toLowerCase().trim();
+      if (n === "amplop & kado" || n === "amplop" || n === "kado" || n === "amplop digital") {
+        sheet = sheets[i];
+        break;
+      }
+    }
+    if (!sheet) {
+      sheet = ss.insertSheet("amplop & kado", 2);
+    }
+  }
+  sheet.setName("amplop & kado");
+
+  if (sheet.getLastRow() === 0) {
+    sheet.getRange(1, 1, 1, 6).setValues([[
+      "Nomor",
+      "Tanggal & Waktu",
+      "Nama Pengirim",
+      "Jenis Hadiah",
+      "Nominal (Rp)",
+      "Catatan / Doa"
+    ]]);
+    sheet.getRange(1, 1, 1, 6)
+      .setFontWeight("bold")
+      .setBackground("#1B5E20") // Emerald Green Elegan
+      .setFontColor("#FFFFFF")
+      .setHorizontalAlignment("center")
+      .setVerticalAlignment("middle");
+    sheet.setRowHeight(1, 35);
+    sheet.setFrozenRows(1);
+
+    // Atur lebar kolom tab amplop & kado
+    sheet.setColumnWidth(1, 65);  // Nomor
+    sheet.setColumnWidth(2, 160); // Tanggal & Waktu
+    sheet.setColumnWidth(3, 200); // Nama Pengirim
+    sheet.setColumnWidth(4, 140); // Jenis Hadiah (QRIS / Kado Fisik)
+    sheet.setColumnWidth(5, 150); // Nominal (Rp)
+    sheet.setColumnWidth(6, 280); // Catatan / Doa
   }
   return sheet;
 }
@@ -412,7 +467,7 @@ function doGet(e) {
       status: "success",
       message: "Webhook Zaky & Dina Aktif & Spreadsheet Terverifikasi!",
       detail: cleanResult,
-      tabs: ["tamu", "album foto tamu"]
+      tabs: ["tamu", "album foto tamu", "amplop & kado"]
     })).setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -545,7 +600,54 @@ function doPost(e) {
     }
 
     // ===================================================
-    // 3. RSVP KEHADIRAN (OPSIONAL)
+    // 3. KONFIRMASI AMPLOP DIGITAL & KADO (TAB: "amplop & kado")
+    // ===================================================
+    if (data.type === "confirmGift" || data.type === "gift" || data.type === "amplop" || data.type === "kado") {
+      var amplopSheet = getAmplopSheet(ss);
+      var senderName = (data.name || "Tamu Undangan").trim();
+      var giftType = (data.giftType || "QRIS").trim();
+      var rawAmount = (data.amount || "").toString().trim();
+      var note = (data.note || "").trim();
+      var timeStr = formatTanggalIndonesia(new Date());
+
+      // Format nominal jika diisi (khusus QRIS atau transfer)
+      var displayAmount = "-";
+      if (rawAmount) {
+        var numOnly = rawAmount.replace(/[^0-9]/g, "");
+        if (numOnly) {
+          displayAmount = "Rp " + Number(numOnly).toLocaleString("id-ID");
+        } else {
+          displayAmount = rawAmount;
+        }
+      }
+
+      var nextNo = Math.max(1, amplopSheet.getLastRow());
+      amplopSheet.appendRow([
+        nextNo,
+        timeStr,
+        senderName,
+        giftType,
+        displayAmount,
+        note || "-"
+      ]);
+
+      var lastRow = amplopSheet.getLastRow();
+      amplopSheet.setRowHeight(lastRow, 28);
+      amplopSheet.getRange(lastRow, 1).setHorizontalAlignment("center");
+      amplopSheet.getRange(lastRow, 2).setHorizontalAlignment("center");
+      amplopSheet.getRange(lastRow, 3).setFontWeight("bold");
+      amplopSheet.getRange(lastRow, 4).setHorizontalAlignment("center");
+      amplopSheet.getRange(lastRow, 5).setHorizontalAlignment("right");
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        action: "recorded",
+        message: "Konfirmasi " + giftType + " dari " + senderName + " berhasil dicatat di tab amplop & kado!"
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // ===================================================
+    // 4. RSVP KEHADIRAN (OPSIONAL)
     // ===================================================
     if (data.type === "rsvp") {
       return ContentService.createTextOutput(JSON.stringify({
