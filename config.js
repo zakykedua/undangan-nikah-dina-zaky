@@ -29,27 +29,37 @@ const WEDDING_CONFIG = {
   // Opsional: Path video animasi buatan sendiri (misal: "assets/video/underwater-intro.mp4")
   introVideoPath: null,
 
-  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 20 Maret 2027 07:00:00)
-  weddingDate: "2027-03-20T07:00:00",
+  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 20 Maret 2027 08:00:00 WIB)
+  weddingDate: "2027-03-20T08:00:00+07:00",
 
   // Google Drive & Google Sheets Integration (Aktif: Buku Tamu Otomatis, Shared Live Album Feed, & RSVP)
   googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbwZDBAmhhwYbNcNKRl4yKeVfkaPySngGZifD4YewDHQIHDVVPzVQkTg9TfW2aYPWDJ8/exec",
 
-  // Detail Acara Akad Nikah
+  // 1. Detail Acara Akad Nikah (Sabtu, 20 Maret 2027 di Gedung Wanita Nganjuk)
   akad: {
     title: "Akad Nikah",
     date: "Sabtu, 20 Maret 2027",
-    time: "Pukul 07.00 WIB",
-    venue: "Kediaman Mempelai",
-    address: "Loceret, Nganjuk",
-    mapsUrl: "https://maps.google.com"
+    time: "Pukul 08.00 - 10.00 WIB",
+    venue: "Gedung Wanita Nganjuk",
+    address: "Jl. P. Sudirman No. 12, Mangundikaran, Nganjuk",
+    mapsUrl: "https://maps.google.com/?q=Gedung+Wanita+Nganjuk"
   },
 
-  // Detail Acara Ngunduh Mantu
+  // 2. Detail Acara Resepsi Pernikahan (Sabtu, 20 Maret 2027 di Gedung Wanita Nganjuk)
   resepsi: {
+    title: "Resepsi Pernikahan",
+    date: "Sabtu, 20 Maret 2027",
+    time: "Pukul 11.00 - 14.00 WIB",
+    venue: "Gedung Wanita Nganjuk",
+    address: "Jl. P. Sudirman No. 12, Mangundikaran, Nganjuk",
+    mapsUrl: "https://maps.google.com/?q=Gedung+Wanita+Nganjuk"
+  },
+
+  // 3. Detail Acara Ngunduh Mantu (Sabtu, 27 Maret 2027 di Pendopo Marsudi Utomo, Klaten)
+  ngunduhMantu: {
     title: "Ngunduh Mantu",
-    date: "Minggu, 27 Maret 2027",
-    time: "Pukul 13.00 - 15.00 WIB",
+    date: "Sabtu, 27 Maret 2027",
+    time: "Pukul 10.00 - 14.00 WIB",
     venue: "Pendopo Marsudi Utomo",
     address: "Pedan, Klaten",
     mapsUrl: "https://maps.app.goo.gl/nM2MsdTaEWafZusg7"
@@ -68,8 +78,8 @@ const WEDDING_CONFIG = {
       description: "Mengikat janji suci disaksikan keluarga untuk melangkah ke jenjang pernikahan."
     },
     {
-      year: "24 April 2027",
-      title: "meniqah",
+      year: "20 Maret 2027",
+      title: "Hari Pernikahan",
       description: "Resmi menjadi sepasang suami dan istri dalam ikatan pernikahan yang suci."
     }
   ],

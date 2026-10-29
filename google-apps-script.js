@@ -322,7 +322,8 @@ function getWaFormula(guestName, guestUrl) {
     "Yth. *" + guestName + "*,\n\n" +
     "Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada hari bahagia pernikahan kami:\n\n" +
     "💍 *Zaky & Dina*\n" +
-    "🗓️ *Sabtu & Minggu, 20 & 27 Maret 2027*\n\n" +
+    "🗓️ *Sabtu, 20 Maret 2027 (Akad & Resepsi - Gedung Wanita Nganjuk)*\n" +
+    "🗓️ *Sabtu, 27 Maret 2027 (Ngunduh Mantu - Pendopo Marsudi Utomo, Klaten)*\n\n" +
     "Detail acara, lokasi, dan konfirmasi kehadiran dapat diakses melalui tautan undangan berikut:\n" +
     "🔗 " + guestUrl + "\n\n" +
     "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.\n\n" +

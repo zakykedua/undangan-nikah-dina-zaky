@@ -151,17 +151,47 @@ function initWeddingData() {
   document.getElementById("cover-img").src = WEDDING_CONFIG.coupleCoverPhoto;
   document.getElementById("hero-img").src = WEDDING_CONFIG.coupleFunPhoto;
 
-  document.getElementById("akad-date").textContent = WEDDING_CONFIG.akad.date;
-  document.getElementById("akad-time").textContent = WEDDING_CONFIG.akad.time;
-  document.getElementById("akad-venue").textContent = WEDDING_CONFIG.akad.venue;
-  document.getElementById("akad-address").textContent = WEDDING_CONFIG.akad.address;
-  document.getElementById("akad-maps").href = WEDDING_CONFIG.akad.mapsUrl;
+  // 1. Detail Akad Nikah
+  if (WEDDING_CONFIG.akad) {
+    const elDate = document.getElementById("akad-date");
+    const elTime = document.getElementById("akad-time");
+    const elVenue = document.getElementById("akad-venue");
+    const elAddress = document.getElementById("akad-address");
+    const elMaps = document.getElementById("akad-maps");
+    if (elDate) elDate.textContent = WEDDING_CONFIG.akad.date;
+    if (elTime) elTime.textContent = WEDDING_CONFIG.akad.time;
+    if (elVenue) elVenue.textContent = WEDDING_CONFIG.akad.venue;
+    if (elAddress) elAddress.textContent = WEDDING_CONFIG.akad.address;
+    if (elMaps) elMaps.href = WEDDING_CONFIG.akad.mapsUrl;
+  }
 
-  document.getElementById("resepsi-date").textContent = WEDDING_CONFIG.resepsi.date;
-  document.getElementById("resepsi-time").textContent = WEDDING_CONFIG.resepsi.time;
-  document.getElementById("resepsi-venue").textContent = WEDDING_CONFIG.resepsi.venue;
-  document.getElementById("resepsi-address").textContent = WEDDING_CONFIG.resepsi.address;
-  document.getElementById("resepsi-maps").href = WEDDING_CONFIG.resepsi.mapsUrl;
+  // 2. Detail Resepsi Pernikahan
+  if (WEDDING_CONFIG.resepsi) {
+    const elDate = document.getElementById("resepsi-date");
+    const elTime = document.getElementById("resepsi-time");
+    const elVenue = document.getElementById("resepsi-venue");
+    const elAddress = document.getElementById("resepsi-address");
+    const elMaps = document.getElementById("resepsi-maps");
+    if (elDate) elDate.textContent = WEDDING_CONFIG.resepsi.date;
+    if (elTime) elTime.textContent = WEDDING_CONFIG.resepsi.time;
+    if (elVenue) elVenue.textContent = WEDDING_CONFIG.resepsi.venue;
+    if (elAddress) elAddress.textContent = WEDDING_CONFIG.resepsi.address;
+    if (elMaps) elMaps.href = WEDDING_CONFIG.resepsi.mapsUrl;
+  }
+
+  // 3. Detail Ngunduh Mantu
+  if (WEDDING_CONFIG.ngunduhMantu) {
+    const elDate = document.getElementById("ngunduh-date");
+    const elTime = document.getElementById("ngunduh-time");
+    const elVenue = document.getElementById("ngunduh-venue");
+    const elAddress = document.getElementById("ngunduh-address");
+    const elMaps = document.getElementById("ngunduh-maps");
+    if (elDate) elDate.textContent = WEDDING_CONFIG.ngunduhMantu.date;
+    if (elTime) elTime.textContent = WEDDING_CONFIG.ngunduhMantu.time;
+    if (elVenue) elVenue.textContent = WEDDING_CONFIG.ngunduhMantu.venue;
+    if (elAddress) elAddress.textContent = WEDDING_CONFIG.ngunduhMantu.address;
+    if (elMaps) elMaps.href = WEDDING_CONFIG.ngunduhMantu.mapsUrl;
+  }
 
   const timelineContainer = document.getElementById("timeline-container");
   if (timelineContainer && WEDDING_CONFIG.loveStory) {

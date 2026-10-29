@@ -829,6 +829,45 @@ section {
   pointer-events: none;
 }
 
+/* CARD AKAD NIKAH SPESIAL (DIBEDAKAN ELEGAN) */
+.event-card.event-card-akad {
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.98) 0%, rgba(255, 255, 255, 0.94) 100%);
+  border: 1.5px solid rgba(212, 163, 115, 0.6);
+  box-shadow: 0 16px 36px rgba(212, 163, 115, 0.18), 0 4px 16px rgba(59, 103, 144, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card.event-card-akad::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1.5px solid rgba(212, 163, 115, 0.45);
+  border-radius: 40px 40px 6px 6px;
+  pointer-events: none;
+}
+
+.card-highlight-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8C5819;
+  background: linear-gradient(135deg, rgba(212, 163, 115, 0.22), rgba(216, 150, 168, 0.18));
+  border: 1px solid rgba(212, 163, 115, 0.5);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.event-card.event-card-akad .event-title {
+  color: #1E3A5F;
+  font-weight: 600;
+}
+
 .event-title {
   font-family: var(--font-serif);
   font-size: 1.85rem;
