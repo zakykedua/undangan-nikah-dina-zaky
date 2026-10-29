@@ -847,22 +847,6 @@ section {
   pointer-events: none;
 }
 
-.card-highlight-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #8C5819;
-  background: linear-gradient(135deg, rgba(212, 163, 115, 0.22), rgba(216, 150, 168, 0.18));
-  border: 1px solid rgba(212, 163, 115, 0.5);
-  padding: 5px 14px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-}
-
 .event-card.event-card-akad .event-title {
   color: #1E3A5F;
   font-weight: 600;

@@ -29,8 +29,8 @@ const WEDDING_CONFIG = {
   // Opsional: Path video animasi buatan sendiri (misal: "assets/video/underwater-intro.mp4")
   introVideoPath: null,
 
-  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 20 Maret 2027 08:00:00 WIB)
-  weddingDate: "2027-03-20T08:00:00+07:00",
+  // Tanggal Acara Utama untuk Hitung Mundur (Akad Nikah: 20 Maret 2027 07:00:00 WIB)
+  weddingDate: "2027-03-20T07:00:00+07:00",
 
   // Google Drive & Google Sheets Integration (Aktif: Buku Tamu Otomatis, Shared Live Album Feed, & RSVP)
   googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbwZDBAmhhwYbNcNKRl4yKeVfkaPySngGZifD4YewDHQIHDVVPzVQkTg9TfW2aYPWDJ8/exec",
@@ -39,7 +39,7 @@ const WEDDING_CONFIG = {
   akad: {
     title: "Akad Nikah",
     date: "Sabtu, 20 Maret 2027",
-    time: "Pukul 08.00 - 10.00 WIB",
+    time: "Pukul 07.00 WIB",
     venue: "Gedung Wanita Nganjuk",
     address: "Jl. P. Sudirman No. 12, Mangundikaran, Nganjuk",
     mapsUrl: "https://maps.google.com/?q=Gedung+Wanita+Nganjuk"
