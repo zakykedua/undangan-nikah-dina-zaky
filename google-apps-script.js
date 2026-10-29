@@ -335,7 +335,7 @@ function getAmplopSheet(ss) {
       }
     }
     if (!sheet) {
-      sheet = ss.insertSheet("amplop & kado", 2);
+      sheet = ss.insertSheet("amplop & kado");
     }
   }
   sheet.setName("amplop & kado");
