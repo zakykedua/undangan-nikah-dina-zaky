@@ -84,24 +84,12 @@ const WEDDING_CONFIG = {
     }
   ],
 
-  // Rekening Hadiah / Amplop Digital
-  banks: [
-    {
-      bankName: "Bank BCA",
-      accountNumber: "1234567890",
-      accountHolder: "Muhammad Zaky Jaluaji"
-    },
-    {
-      bankName: "Bank Mandiri",
-      accountNumber: "0987654321",
-      accountHolder: "Syanda Malsie Adinawa"
-    },
-    {
-      bankName: "Sopipay / GoPay",
-      accountNumber: "089644456263",
-      accountHolder: "zaky jaluaji"
-    }
-  ],
+  // Amplop Digital QRIS Resmi (Semua Bank & E-Wallet)
+  qris: {
+    merchantName: "MUHAMMAD ZAKY JALUAJI",
+    nmid: "ID1026627341005",
+    image: "assets/images/qris.jpg"
+  },
 
   // Alamat Kado Fisik
   giftAddress: {

@@ -207,24 +207,46 @@ function initWeddingData() {
     `).join("");
   }
 
-  const bankGrid = document.getElementById("bank-grid");
-  if (bankGrid && WEDDING_CONFIG.banks) {
-    bankGrid.innerHTML = WEDDING_CONFIG.banks.map((bank, idx) => `
-      <div class="bank-card reveal-on-scroll delay-${(idx + 1) * 100}">
-        <div class="bank-name">${bank.bankName}</div>
-        <div class="account-number">${bank.accountNumber}</div>
-        <div class="account-holder">a.n. ${bank.accountHolder}</div>
-        <button class="btn-copy" onclick="copyToClipboard('${bank.accountNumber}', '${bank.bankName}')">
-          Salin No. Rekening
-        </button>
-      </div>
-    `).join("");
+  // QRIS Amplop Digital
+  if (WEDDING_CONFIG.qris) {
+    const qrisName = document.getElementById("qris-name");
+    const qrisNmid = document.getElementById("qris-nmid");
+    const qrisImg = document.getElementById("qris-img");
+    if (qrisName) qrisName.textContent = WEDDING_CONFIG.qris.merchantName;
+    if (qrisNmid) qrisNmid.textContent = "NMID: " + WEDDING_CONFIG.qris.nmid;
+    if (qrisImg && WEDDING_CONFIG.qris.image) qrisImg.src = WEDDING_CONFIG.qris.image;
   }
 
+  // Alamat Kado Fisik
   if (WEDDING_CONFIG.giftAddress) {
-    document.getElementById("gift-recipient").textContent = WEDDING_CONFIG.giftAddress.recipient;
-    document.getElementById("gift-phone").textContent = WEDDING_CONFIG.giftAddress.phone;
-    document.getElementById("gift-full-address").textContent = WEDDING_CONFIG.giftAddress.address;
+    const elRecipient = document.getElementById("gift-recipient");
+    const elPhone = document.getElementById("gift-phone");
+    const elAddress = document.getElementById("gift-full-address");
+    if (elRecipient) elRecipient.textContent = WEDDING_CONFIG.giftAddress.recipient;
+    if (elPhone) elPhone.textContent = WEDDING_CONFIG.giftAddress.phone;
+    if (elAddress) elAddress.textContent = WEDDING_CONFIG.giftAddress.address;
+  }
+}
+
+function copyGiftAddress() {
+  const recipient = document.getElementById("gift-recipient")?.textContent || "Zaky & Dina";
+  const phone = document.getElementById("gift-phone")?.textContent || "089644456263";
+  const address = document.getElementById("gift-full-address")?.textContent || "Perumahan Kurung Indah, No. 35, Kurung, Ceper, Klaten";
+  const fullText = `Penerima: ${recipient} (${phone})\nAlamat: ${address}`;
+
+  navigator.clipboard.writeText(fullText).then(() => {
+    showToastNotification("✨ Alamat pengiriman kado berhasil disalin!");
+  }).catch(() => {
+    alert("✨ Alamat pengiriman kado:\n" + fullText);
+  });
+}
+
+function openLightbox(src) {
+  const modal = document.getElementById("lightbox-modal");
+  const modalImg = document.getElementById("lightbox-img");
+  if (modal && modalImg) {
+    modalImg.src = src;
+    modal.classList.add("active");
   }
 }
 

@@ -1088,11 +1088,128 @@ section {
   color: var(--text-muted);
 }
 
-/* GIFT */
+/* GIFT & QRIS */
 .gift-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+}
+
+.qris-card {
+  background: var(--bg-card-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-arch-card);
+  padding: 34px 18px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.qris-card::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid var(--border-pink-glow);
+  border-radius: 40px 40px 6px 6px;
+  pointer-events: none;
+}
+
+.qris-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue-primary);
+  background: rgba(59, 103, 144, 0.1);
+  border: 1px solid rgba(59, 103, 144, 0.25);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-merchant-name {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-nmid {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-img-wrapper {
+  width: 250px;
+  max-width: 82vw;
+  margin: 0 auto 14px;
+  padding: 8px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1.5px solid var(--border-pink-glow);
+  box-shadow: 0 8px 22px rgba(59, 103, 144, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-img-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.qris-img-wrapper img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.qris-supported-banks {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-btn-group {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+
+.qris-tip-box {
+  background: rgba(248, 250, 253, 0.85);
+  border: 1px dashed rgba(59, 103, 144, 0.25);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-top: 14px;
+  text-align: left;
+  position: relative;
+  z-index: 2;
 }
 
 .bank-card {
@@ -1147,12 +1264,18 @@ section {
   background: #FFF;
   color: var(--blue-primary);
   border: 1px solid var(--border-pink-glow);
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: 4px;
   font-weight: 600;
   font-size: 0.72rem;
   letter-spacing: 0.8px;
   text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   position: relative;
   z-index: 2;
 }
