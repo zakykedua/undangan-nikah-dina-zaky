@@ -146,142 +146,240 @@
        =================================================== */
     .stand-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 520px;
       background: #FFFFFF;
-      border: 2px solid #E5EDF5;
-      border-radius: 24px;
-      padding: 32px 24px 28px;
+      background-image: radial-gradient(circle at 50% 12%, rgba(240, 246, 253, 0.7) 0%, #FFFFFF 75%);
+      border: 2.5px solid #2B4C7E;
+      border-radius: 28px;
+      padding: 36px 30px 28px;
       text-align: center;
-      box-shadow: 0 16px 40px rgba(59, 103, 144, 0.12);
+      box-shadow: 0 20px 50px rgba(43, 76, 126, 0.12), 0 4px 16px rgba(216, 150, 168, 0.12);
       position: relative;
       overflow: hidden;
+      margin-bottom: 24px;
     }
 
+    /* Inner Ornamental Border */
     .stand-card::before {
       content: '';
       position: absolute;
-      inset: 8px;
-      border: 1px solid rgba(216, 150, 168, 0.45);
-      border-radius: 18px;
+      inset: 10px;
+      border: 1.5px solid rgba(216, 150, 168, 0.65);
+      border-radius: 20px;
       pointer-events: none;
     }
 
+    /* Ornamental Corner Accents */
+    .corner-decor {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: #2B4C7E;
+      border-style: solid;
+      pointer-events: none;
+    }
+    .corner-decor.tl { top: 18px; left: 18px; border-width: 2px 0 0 2px; }
+    .corner-decor.tr { top: 18px; right: 18px; border-width: 2px 2px 0 0; }
+    .corner-decor.bl { bottom: 18px; left: 18px; border-width: 0 0 2px 2px; }
+    .corner-decor.br { bottom: 18px; right: 18px; border-width: 0 2px 2px 0; }
+
     .stand-header-tag {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-size: 0.72rem;
-      letter-spacing: 2px;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
       font-weight: 700;
-      color: var(--pink-primary);
+      color: #881337;
       background: rgba(216, 150, 168, 0.15);
-      padding: 4px 14px;
+      border: 1px solid rgba(216, 150, 168, 0.45);
+      padding: 5px 16px;
       border-radius: 50px;
       margin-bottom: 12px;
     }
 
+    .stand-header-tag .tag-sparkle {
+      font-size: 0.65rem;
+      color: #C2546A;
+    }
+
     .stand-title {
       font-family: var(--font-serif);
-      font-size: 2.3rem;
+      font-size: 3rem;
       font-weight: 600;
-      color: var(--blue-primary);
-      line-height: 1.1;
-      margin-bottom: 4px;
+      color: #1E3A5F;
+      line-height: 1.05;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
     .stand-title span {
-      color: var(--pink-primary);
+      color: #C2546A;
       font-style: italic;
+      font-family: var(--font-serif);
+      font-size: 3.2rem;
+      margin: 0 4px;
+    }
+
+    .stand-date-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stand-date-divider .date-line {
+      height: 1px;
+      width: 44px;
+      background: linear-gradient(90deg, transparent, #D896A8);
+    }
+
+    .stand-date-divider .date-line.right {
+      background: linear-gradient(90deg, #D896A8, transparent);
     }
 
     .stand-date {
       font-size: 0.8rem;
       color: var(--text-muted);
-      letter-spacing: 1px;
-      margin-bottom: 20px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
     }
 
+    /* KOTAK QR CODE LEBIH BESAR & MEWAH */
     .qr-frame {
-      width: 220px;
-      height: 220px;
+      width: 320px;
+      height: 320px;
+      max-width: 85vw;
+      max-height: 85vw;
       margin: 0 auto 18px;
       padding: 12px;
       background: #FFFFFF;
-      border-radius: 16px;
-      border: 1.5px solid rgba(59, 103, 144, 0.25);
-      box-shadow: 0 6px 20px rgba(59, 103, 144, 0.08);
+      border-radius: 24px;
+      border: 2px solid rgba(59, 103, 144, 0.25);
+      box-shadow: 0 10px 30px rgba(59, 103, 144, 0.12), 0 3px 12px rgba(216, 150, 168, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .qr-frame img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      border-radius: 8px;
+      border-radius: 12px;
+      display: block;
     }
 
     .stand-scan-msg {
-      font-size: 1.05rem;
+      font-size: 1.22rem;
       font-weight: 700;
-      color: var(--text-dark);
+      color: #1E3A5F;
       margin-bottom: 6px;
-    }
-
-    .stand-desc {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      max-width: 320px;
-      margin: 0 auto 18px;
-    }
-
-    .instructions-box {
-      background: #F8FAFD;
-      border: 1px dashed rgba(59, 103, 144, 0.25);
-      border-radius: 12px;
-      padding: 12px 14px;
-      text-align: left;
-      font-size: 0.74rem;
-      color: var(--text-dark);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .step-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .step-num {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--blue-primary);
-      color: #FFFFFF;
-      font-size: 0.65rem;
-      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      gap: 8px;
     }
 
+    .stand-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      max-width: 420px;
+      margin: 0 auto 18px;
+    }
+
+    /* PANDUAN 3 LANGKAH MODERN (3-COLUMN GRID) */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0 auto 18px;
+      text-align: center;
+    }
+
+    .step-card {
+      background: #F8FAFD;
+      border: 1px solid rgba(59, 103, 144, 0.16);
+      border-radius: 14px;
+      padding: 12px 6px 10px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .step-badge {
+      position: absolute;
+      top: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #2B4C7E;
+      color: #FFFFFF;
+      font-size: 0.6rem;
+      font-weight: 700;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-icon {
+      font-size: 1.25rem;
+      margin: 3px 0 2px;
+    }
+
+    .step-heading {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #1E3A5F;
+      margin-bottom: 2px;
+    }
+
+    .step-text {
+      font-size: 0.67rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* URL BADGE DI BAWAH */
     .stand-url-badge {
-      margin-top: 14px;
-      font-size: 0.68rem;
-      color: var(--blue-soft);
-      font-family: monospace;
+      font-size: 0.72rem;
+      color: #3B6790;
+      background: rgba(59, 103, 144, 0.06);
+      border: 1px solid rgba(59, 103, 144, 0.18);
+      border-radius: 30px;
+      padding: 6px 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      max-width: 100%;
       word-break: break-all;
+    }
+
+    .stand-url-badge .url-text {
+      font-weight: 600;
+      color: #2B4C7E;
     }
 
     /* Print Styles: Hanya mencetak kartu stand meja saat di mode album */
     @media print {
-      body {
-        background: #FFFFFF;
-        padding: 0;
+      @page {
+        size: A5 portrait;
+        margin: 8mm;
+      }
+
+      html, body {
+        background: #FFFFFF !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
       }
 
       .toolbar,
@@ -291,12 +389,59 @@
       }
 
       .stand-card {
-        border: 2px solid #3B6790;
-        box-shadow: none;
-        max-width: 100%;
-        margin: 0 auto;
-        page-break-inside: avoid;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        border: 2.5px solid #2B4C7E !important;
+        border-radius: 20px !important;
+        box-shadow: none !important;
+        padding: 24px 20px 18px !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
         display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .stand-card::before {
+        border: 1.5px solid #D896A8 !important;
+        inset: 8px !important;
+      }
+
+      .corner-decor {
+        border-color: #2B4C7E !important;
+      }
+
+      .stand-header-tag {
+        background: rgba(216, 150, 168, 0.15) !important;
+        border-color: #D896A8 !important;
+        color: #881337 !important;
+      }
+
+      .stand-title {
+        font-size: 2.8rem !important;
+      }
+
+      .qr-frame {
+        width: 320px !important;
+        height: 320px !important;
+        border: 2px solid #2B4C7E !important;
+        box-shadow: none !important;
+        margin: 0 auto 14px !important;
+      }
+
+      .steps-grid {
+        gap: 8px !important;
+      }
+
+      .step-card {
+        background: #F8FAFD !important;
+        border: 1px solid #D896A8 !important;
+      }
+
+      .step-badge {
+        background: #2B4C7E !important;
+        color: #FFF !important;
       }
     }
   </style>
@@ -411,40 +556,71 @@
        KARTU STAND MEJA FISIK (HANYA MUNCUL DI MODE ALBUM)
        =================================================== -->
   <div class="stand-card" id="stand-card" style="display: block;">
-    <div class="stand-header-tag" id="card-tag">Kamera Live Instant</div>
-    <h1 class="stand-title">Zaky <span>&</span> Dina</h1>
-    <p class="stand-date">Sabtu & Minggu, 20 & 27 Maret 2027</p>
+    <!-- Corner Ornaments -->
+    <span class="corner-decor tl"></span>
+    <span class="corner-decor tr"></span>
+    <span class="corner-decor bl"></span>
+    <span class="corner-decor br"></span>
 
-    <!-- Kotak QR Code Live Album -->
+    <!-- Top Badge -->
+    <div class="stand-header-tag" id="card-tag">
+      <span class="tag-sparkle">✦</span>
+      <span>KAMERA LIVE INSTANT</span>
+      <span class="tag-sparkle">✦</span>
+    </div>
+
+    <!-- Couple Names -->
+    <h1 class="stand-title">Zaky <span>&</span> Dina</h1>
+
+    <!-- Date Divider -->
+    <div class="stand-date-divider">
+      <span class="date-line"></span>
+      <span class="stand-date">Sabtu & Minggu, 20 & 27 Maret 2027</span>
+      <span class="date-line right"></span>
+    </div>
+
+    <!-- Kotak QR Code Live Album (LEBIH BESAR & TAJAM) -->
     <div class="qr-frame">
       <img id="qr-image" src="assets/images/album_qr.png" alt="QR Code Live Album Zaky & Dina">
     </div>
 
-    <h2 class="stand-scan-msg" id="card-main-msg">📸 Cekrek & Abadikan Momen!</h2>
+    <!-- Call To Action -->
+    <h2 class="stand-scan-msg" id="card-main-msg">
+      <span>📸</span>
+      <span>Scan & Abadikan Momen Bahagiamu!</span>
+    </h2>
     <p class="stand-desc" id="card-desc">
-      Bantu kami mengabadikan momen bahagia ini. Scan barcode ini dengan kamera HP Anda untuk langsung mengambil foto
-      instant!
+      Arahkan kamera HP Anda ke QR Code di atas untuk membuka <strong>Kamera Live Instant</strong>. Foto Anda otomatis tersimpan di album kenangan & Google Drive pernikahan kami!
     </p>
 
-    <!-- Petunjuk Langkah -->
-    <div class="instructions-box" id="card-steps">
-      <div class="step-item">
-        <span class="step-num">1</span>
-        <span>Arahkan kamera HP Anda ke QR Code di atas.</span>
+    <!-- Panduan 3 Langkah Modern (3-Kolom Grid) -->
+    <div class="steps-grid" id="card-steps">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <div class="step-icon">📱</div>
+        <div class="step-heading">Scan Barcode</div>
+        <div class="step-text">Arahkan kamera HP ke QR Code di atas</div>
       </div>
-      <div class="step-item">
-        <span class="step-num">2</span>
-        <span>Ketuk tautan untuk membuka Kamera Live Instant.</span>
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <div class="step-icon">✍️</div>
+        <div class="step-heading">Isi Nama</div>
+        <div class="step-text">Ketik nama untuk album foto pribadi</div>
       </div>
-      <div class="step-item">
-        <span class="step-num">3</span>
-        <span>Jepret foto terbaikmu, otomatis tersimpan di album & Drive kami!</span>
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <div class="step-icon">📸</div>
+        <div class="step-heading">Jepret Foto</div>
+        <div class="step-text">Otomatis masuk ke Album & Drive kami</div>
       </div>
     </div>
 
-    <p class="stand-url-badge" id="card-url">
-      https://zakykedua.github.io/undangan-nikah-dina-zaky/album.html?from=qr
-    </p>
+    <!-- Akses URL Alternatif -->
+    <div class="stand-url-badge" id="card-url">
+      <span>🌐</span>
+      <span>Akses Browser Langsung:</span>
+      <span class="url-text">zakykedua.github.io/undangan-nikah-dina-zaky/album.html?from=qr</span>
+    </div>
   </div>
 
   <script>
