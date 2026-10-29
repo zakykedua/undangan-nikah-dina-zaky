@@ -347,80 +347,65 @@
          =================================================== -->
     <section id="gift">
       <div class="section-title-box reveal-on-scroll">
-        <p class="section-subtitle">Tanda Kasih</p>
         <h3 class="section-title">Amplop Digital & Kado</h3>
         <div class="title-line"></div>
       </div>
 
       <p class="reveal-on-scroll delay-100"
         style="text-align: center; color: var(--text-muted); margin-bottom: 24px; font-size: 0.88rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6;">
-        Doa restu Anda merupakan karunia terindah bagi kami. Namun jika Anda berkenan memberikan tanda kasih, Anda dapat menggunakan QRIS pembayaran di bawah ini atau mengirimkan kado fisik ke alamat kami:
+        Doa restu kamu sudah cukup bagi kami. Tapiiii kalauuu kamu pengen ngamplop onglen, kamu bisa pakai QRIS ini
+        yahhh... atau mengirimkan kado fisik ke alamat kami:
       </p>
 
       <div class="gift-grid reveal-on-scroll delay-200">
-        <!-- 1. KARTU QRIS RESMI (MUHAMMAD ZAKY JALUAJI) -->
-        <div class="qris-card">
-          <div class="qris-badge">💳 QRIS Pembayaran Nasional</div>
-          <h4 class="qris-merchant-name" id="qris-name">MUHAMMAD ZAKY JALUAJI</h4>
-          <p class="qris-nmid" id="qris-nmid">NMID: ID1026627341005</p>
-
-          <!-- Kotak Gambar QRIS -->
-          <div class="qris-img-wrapper" onclick="openLightbox('assets/images/qris.jpg')" title="Klik untuk memperbesar QRIS">
-            <img id="qris-img" src="assets/images/qris.jpg" alt="QRIS Muhammad Zaky Jaluaji">
-          </div>
-
-          <p class="qris-supported-banks">
-            Menerima pembayaran dari seluruh Bank & E-Wallet:<br>
-            <strong>BCA • Mandiri • BRI • BNI • GoPay • OVO • DANA • ShopeePay • LinkAja</strong>
-          </p>
-
-          <!-- Tombol Aksi QRIS -->
-          <div class="qris-btn-group">
-            <a href="assets/images/qris.jpg" download="QRIS_Muhammad_Zaky_Jaluaji.jpg" class="btn-copy">
-              <span>⬇️ Unduh Gambar QRIS</span>
-            </a>
-            <button type="button" class="btn-copy" onclick="openLightbox('assets/images/qris.jpg')">
-              <span>🔍 Perbesar QRIS</span>
-            </button>
-          </div>
-
-          <div class="qris-tip-box">
-            💡 <strong>Cara Transfer via HP:</strong><br>
-            1. Tekan tombol <em>"Unduh Gambar QRIS"</em> atau screenshot gambar QRIS di atas.<br>
-            2. Buka aplikasi m-Banking / E-Wallet Anda (BCA, Mandiri, GoPay, DANA, dll).<br>
-            3. Pilih menu <strong>Scan / Bayar QRIS</strong>, lalu pilih opsi <strong>Upload / Ambil dari Galeri</strong>.
-          </div>
+        <!-- Kotak Gambar QRIS -->
+        <div class="qris-img-wrapper" onclick="openLightbox('assets/images/qris.jpg')"
+          title="Klik untuk memperbesar QRIS">
+          <img id="qris-img" src="assets/images/qris.jpg" alt="QRIS Muhammad Zaky Jaluaji">
         </div>
-
-        <!-- 2. KARTU ALAMAT KADO FISIK -->
-        <div class="bank-card">
-          <div class="qris-badge" style="background: rgba(216, 150, 168, 0.15); border-color: rgba(216, 150, 168, 0.4); color: var(--pink-primary);">
-            🎁 Kirim Kado Fisik
-          </div>
-          <div class="bank-name" style="font-size: 1.25rem; margin-top: 4px;">Alamat Pengiriman Kado</div>
-          <p style="font-size: 0.88rem; color: var(--text-muted); margin: 12px 0 16px; line-height: 1.6;">
-            Penerima: <strong id="gift-recipient" style="color: var(--text-dark);">Zaky & Dina</strong> (<span id="gift-phone">089644456263</span>)<br>
-            <span id="gift-full-address" style="font-weight: 500; color: var(--text-dark); display: block; margin-top: 4px;">
-              Perumahan Kurung Indah, No. 35, Kurung, Ceper, Klaten
-            </span>
-          </p>
-          <button type="button" class="btn-copy" onclick="copyGiftAddress()">
-            <span>📋 Salin Alamat Lengkap</span>
+        <!-- Tombol Aksi QRIS -->
+        <div class="qris-btn-group">
+          <a href="assets/images/qris.jpg" download="QRIS_Muhammad_Zaky_Jaluaji.jpg" class="btn-copy">
+            <span>⬇️ Unduh Gambar QRIS</span>
+          </a>
+          <button type="button" class="btn-copy" onclick="openLightbox('assets/images/qris.jpg')">
+            <span>🔍 Perbesar QRIS</span>
           </button>
         </div>
       </div>
-    </section>
 
-    <!-- ===================================================
+      <!-- 2. KARTU ALAMAT KADO FISIK -->
+      <div class="bank-card">
+        <div class="qris-badge"
+          style="background: rgba(216, 150, 168, 0.15); border-color: rgba(216, 150, 168, 0.4); color: var(--pink-primary);">
+          🎁 Kirim kado aja
+        </div>
+        <div class="bank-name" style="font-size: 1.25rem; margin-top: 4px;">Alamat Pengiriman Kado</div>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin: 12px 0 16px; line-height: 1.6;">
+          Penerima: <strong id="gift-recipient" style="color: var(--text-dark);">Zaky & Dina</strong> (<span
+            id="gift-phone">089644456263</span>)<br>
+          <span id="gift-full-address"
+            style="font-weight: 500; color: var(--text-dark); display: block; margin-top: 4px;">
+            Perumahan Kurung Indah, No. 35, Kurung, Ceper, Klaten
+          </span>
+        </p>
+        <button type="button" class="btn-copy" onclick="copyGiftAddress()">
+          <span>📋 Salin Alamat Lengkap</span>
+        </button>
+      </div>
+  </div>
+  </section>
+
+  <!-- ===================================================
          FOOTER
          =================================================== -->
-    <footer class="reveal-on-scroll">
-      <p>Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.</p>
-      <div class="footer-names">Zaky & Dina</div>
-      <p
-        style="font-size: 0.75rem; margin-top: 16px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink-primary);">
-        Love Forever & Always</p>
-    </footer>
+  <footer class="reveal-on-scroll">
+    <p>Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.</p>
+    <div class="footer-names">Zaky & Dina</div>
+    <p
+      style="font-size: 0.75rem; margin-top: 16px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--pink-primary);">
+      Love Forever & Always</p>
+  </footer>
 
   </div>
 
