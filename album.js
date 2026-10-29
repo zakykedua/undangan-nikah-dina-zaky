@@ -364,7 +364,7 @@ function renderGuestAlbums() {
 function fetchPhotosFromCloud() {
   const webhookUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
     ? WEDDING_CONFIG.googleDriveWebhookUrl
-    : "https://script.google.com/macros/s/AKfycbwXHFr2JN8Vm9s1fccMMWZxU1mWFb46rsxHdofvVuF-Hqzf2iJ4HIEHpwifcopUQmf5/exec";
+    : "https://script.google.com/macros/s/AKfycbxafv_99OZ9oIpLDCJLjQgEqh-irYLFWcCkvpkZXNSGFZZkNtT-yJH8MtkIufTRHp6e/exec";
 
   if (!webhookUrl) return;
 
@@ -837,7 +837,7 @@ function handleSaveNewPhoto() {
   // OTOMATIS ASYNCHRONOUS UPLOAD KE GOOGLE DRIVE
   const driveUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
     ? WEDDING_CONFIG.googleDriveWebhookUrl
-    : "https://script.google.com/macros/s/AKfycbzd0zThvRVFm5GE6YynxrgP6l2nYINnmOjumqMSTuFz04vE5YwOBSfgnOnM9nMlop0Y/exec";
+    : "https://script.google.com/macros/s/AKfycbxafv_99OZ9oIpLDCJLjQgEqh-irYLFWcCkvpkZXNSGFZZkNtT-yJH8MtkIufTRHp6e/exec";
 
   if (driveUrl) {
     uploadToGoogleDrive(newPhoto, guestName, driveUrl);

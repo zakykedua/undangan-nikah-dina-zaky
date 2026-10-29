@@ -33,7 +33,7 @@ const WEDDING_CONFIG = {
   weddingDate: "2027-03-20T07:00:00+07:00",
 
   // Google Drive & Google Sheets Integration (Aktif: Buku Tamu Otomatis, Shared Live Album Feed, & RSVP)
-  googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbwZDBAmhhwYbNcNKRl4yKeVfkaPySngGZifD4YewDHQIHDVVPzVQkTg9TfW2aYPWDJ8/exec",
+  googleDriveWebhookUrl: "https://script.google.com/macros/s/AKfycbxafv_99OZ9oIpLDCJLjQgEqh-irYLFWcCkvpkZXNSGFZZkNtT-yJH8MtkIufTRHp6e/exec",
 
   // 1. Detail Acara Akad Nikah (Sabtu, 20 Maret 2027 di Gedung Wanita Nganjuk)
   akad: {

@@ -515,7 +515,7 @@ function initGuestbook() {
     // OTOMATIS ASYNCHRONOUS SEND TO GOOGLE SHEETS
     const webhookUrl = (typeof WEDDING_CONFIG !== "undefined" && WEDDING_CONFIG.googleDriveWebhookUrl)
       ? WEDDING_CONFIG.googleDriveWebhookUrl
-      : "https://script.google.com/macros/s/AKfycbzd0zThvRVFm5GE6YynxrgP6l2nYINnmOjumqMSTuFz04vE5YwOBSfgnOnM9nMlop0Y/exec";
+      : "https://script.google.com/macros/s/AKfycbxafv_99OZ9oIpLDCJLjQgEqh-irYLFWcCkvpkZXNSGFZZkNtT-yJH8MtkIufTRHp6e/exec";
 
     if (webhookUrl) {
       fetch(webhookUrl, {
